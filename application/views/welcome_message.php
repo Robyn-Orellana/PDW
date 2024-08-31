@@ -101,6 +101,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div>
 	<h1>hola mundo </h1>
 </div>
-<!--otro comentario echo por mi XD-->
+<!--otro comentario echo por mi XD't-->
+<!--prueba solo-->
 </body>
 </html>
