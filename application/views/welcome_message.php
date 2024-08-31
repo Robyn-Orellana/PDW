@@ -96,5 +96,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
 </div>
 
+
+<!--cometario echo por rodrigo-->
+<div>
+	<h1>hola mundo </h1>
+</div>
+<!--otro comentario echo por mi-->
 </body>
 </html>
