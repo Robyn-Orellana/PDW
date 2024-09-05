@@ -48,10 +48,11 @@
     <input type="checkbox" class="form-check-input" id="tiempo_libre" name="tiempo_libre" value="1">
     <label class="form-check-label" for="tiempo_libre">¿Tiempo Libre (Cronómetro)?</label>
   </div>
-  <div class="form-group">
+ <!--<div class="form-group">
     <label for="fecha">Fecha</label>
     <input type="date" class="form-control" id="fecha" name="fecha" required>
   </div>
+-->
   <button type="submit" class="btn btn-primary">Guardar Estación</button>
 </form>
 
