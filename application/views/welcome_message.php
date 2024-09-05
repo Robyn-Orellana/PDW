@@ -6,9 +6,15 @@
     <title>Estaciones de Monitoreo</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     
-    <!-- en la etiqueta style va todo el CSS -->
+    <!-- CSS es esta  parte va todo lo de el diseño -->
     <style>
-      
+        .card {
+            margin-bottom: 20px;
+        }
+        .timer, .stopwatch {
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -20,7 +26,7 @@
         <div class="row">
             <?php if (!empty($estaciones)): ?>
                 <?php foreach ($estaciones as $estacion): ?>
-                    <div class="col-md-4 mb-3">
+                    <div id="card-estacion-<?php echo $estacion['numero_estacion']; ?>" class="col-md-4 mb-3">
                         <div class="card">
                             <div class="card-header">
                                 Estación Nº <?php echo $estacion['numero_estacion']; ?>
@@ -40,17 +46,18 @@
                                     <strong>Cronómetro:</strong> <span id="stopwatch-time-<?php echo $estacion['numero_estacion']; ?>">00:00:00</span>
                                 </div>
 
-                                <!-- Botón para detener el tiempo y calcular la tarifa -->
+                                <!-- Botón para detener el tiempo -->
                                 <button type="button" class="btn btn-warning mt-3 stop-button" data-estacion="<?php echo $estacion['numero_estacion']; ?>">Detener Tiempo</button>
 
                                 <!-- Mostrar la tarifa calculada -->
-                                <p class="mt-3"><strong>Tarifa a Pagar:</strong> <span id="tarifa-<?php echo $estacion['numero_estacion']; ?>">$0.00</span></p>
+                                <!--<p class="mt-3"><strong>Tarifa a Pagar:</strong> <span id="tarifa-<?php echo $estacion['numero_estacion']; ?>">$0.00</span></p>-->
 
                                 <!-- Botón para eliminar la estación -->
                                 <form method="post" action="<?php echo base_url('index.php/welcome/eliminar'); ?>" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta estación?');">
                                     <input type="hidden" name="numero_estacion" value="<?php echo $estacion['numero_estacion']; ?>">
-                                    <button type="submit" class="btn btn-danger mt-3">Eliminar Estación</button>
+                                <button type="submit" class="btn btn-danger mt-3">Eliminar Estación</button>
                                 </form>
+
                             </div>
                         </div>
                     </div>
@@ -60,82 +67,97 @@
             <?php endif; ?>
         </div>
     </div>
+
+    <!-- JavaScript -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const tarifaPorMinuto = 0.50; // Define la tarifa por minuto
-
-            const botonesStop = document.querySelectorAll('.stop-button');
-
-            botonesStop.forEach(button => {
-                button.addEventListener('click', function () {
-                    const estacionId = button.getAttribute('data-estacion');
-                    stopTime(estacionId); // Detener y calcular tarifa al hacer clic en "Stop"
+        //no tocar ni mover esta parte>>
+        // Asociar la funcionalidad de eliminación de tarjetas
+        document.querySelectorAll('.delete-button').forEach(button => {
+            button.addEventListener('click', function () {
+                let estacionId = this.getAttribute('data-estacion');
+                
+                fetch('<?php echo base_url('index.php/welcome/eliminar'); ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'numero_estacion=' + estacionId,
+                })
+                .then(response => response.text())
+                .then(() => {
+                    document.getElementById('card-estacion-' + estacionId).remove();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                 });
             });
-
-            // Función para detener el tiempo y calcular la tarifa
-            function stopTime(estacionId) {
-                const timerElement = document.getElementById('timer-time-' + estacionId);
-                const stopwatchElement = document.getElementById('stopwatch-time-' + estacionId);
-                let totalMinutos = 0;
-
-                if (timerElement && timerElement.style.display !== 'none') {
-                    // Temporizador - calcular el tiempo transcurrido
-                    const [hours, minutes, seconds] = timerElement.textContent.split(':').map(Number);
-                    totalMinutos = hours * 60 + minutes + seconds / 60;
-                } else if (stopwatchElement && stopwatchElement.style.display !== 'none') {
-                    // Cronómetro - calcular el tiempo transcurrido
-                    const [hours, minutes, seconds] = stopwatchElement.textContent.split(':').map(Number);
-                    totalMinutos = hours * 60 + minutes + seconds / 60;
-                }
-
-                // Calcular la tarifa
-                const tarifa = totalMinutos * tarifaPorMinuto;
-                document.getElementById('tarifa-' + estacionId).textContent = `$${tarifa.toFixed(2)}`;
-
-                // Detener el intervalo para el temporizador o cronómetro
-                clearInterval(window['timerInterval' + estacionId]);
-            }
-
-            // Función para actualizar el temporizador
-            function updateTimer(timerId, duration, startTime, estacionId) {
-                const endTime = new Date(startTime).getTime() + (duration * 60000); // Duración en milisegundos
-                window['timerInterval' + estacionId] = setInterval(function () {
-                    const now = new Date().getTime();
-                    const timeLeft = endTime - now;
-                    if (timeLeft < 0) {
-                        clearInterval(window['timerInterval' + estacionId]);
-                        stopTime(estacionId); // Calcular tarifa cuando llegue a 0
-                    }
-                    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                    document.getElementById(timerId).textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                }, 1000);
-            }
-
-            // Función para actualizar el cronómetro
-            function updateStopwatch(stopwatchId, startTime, estacionId) {
-                const start = new Date(startTime).getTime();
-                window['timerInterval' + estacionId] = setInterval(function () {
-                    const now = new Date().getTime();
-                    const elapsed = now - start;
-                    const hours = Math.floor(elapsed / (1000 * 60 * 60));
-                    const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
-                    document.getElementById(stopwatchId).textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                }, 1000);
-            }
-
-            // Aplicar la función updateTimer o updateStopwatch para cada estación
-            <?php foreach ($estaciones as $estacion): ?>
-                <?php if (!$estacion['tiempo_libre'] && $estacion['tiempo_solicitado']): ?>
-                    updateTimer('timer-time-<?php echo $estacion['numero_estacion']; ?>', <?php echo $estacion['tiempo_solicitado']; ?>, '<?php echo $estacion['hora_inicio']; ?>', '<?php echo $estacion['numero_estacion']; ?>');
-                <?php elseif ($estacion['tiempo_libre']): ?>
-                    updateStopwatch('stopwatch-time-<?php echo $estacion['numero_estacion']; ?>', '<?php echo $estacion['hora_inicio']; ?>', '<?php echo $estacion['numero_estacion']; ?>');
-                <?php endif; ?>
-            <?php endforeach; ?>
         });
+        //no tocar ni mover<<
+
+
+       // Función para detener el tiempo
+       function detenerTiempo(estacionId) {
+            const timerElement = document.getElementById('timer-time-' + estacionId);
+            const stopwatchElement = document.getElementById('stopwatch-time-' + estacionId);
+            if (timerElement) {
+                // Detener el temporizador
+                const timerInterval = parseInt(timerElement.dataset.interval, 10);
+                if (!isNaN(timerInterval)) {
+                    clearInterval(timerInterval);
+                }
+            } else if (stopwatchElement) {
+                // Detener el cronómetro
+                const stopwatchInterval = parseInt(stopwatchElement.dataset.interval, 10);
+                if (!isNaN(stopwatchInterval)) {
+                    clearInterval(stopwatchInterval);
+                }
+            }
+        }
+
+        // Asociar la funcionalidad a los botones de detener tiempo
+        document.querySelectorAll('.stop-button').forEach(button => {
+            button.addEventListener('click', function () {
+                let estacionId = this.getAttribute('data-estacion');
+                detenerTiempo(estacionId);
+            });
+        });
+
+        // Inicializar temporizador y cronómetro
+        <?php foreach ($estaciones as $estacion): ?>
+            <?php if (!$estacion['tiempo_libre'] && $estacion['tiempo_solicitado']): ?>
+                // Inicializar temporizador
+                let endTime = new Date('<?php echo $estacion['hora_inicio']; ?>').getTime() + (<?php echo $estacion['tiempo_solicitado']; ?> * 60000);
+                let timerInterval = setInterval(function () {
+                    let now = new Date().getTime();
+                    let timeLeft = endTime - now;
+                    if (timeLeft < 0) timeLeft = 0;
+                    let minutes = Math.floor(timeLeft / 60000);
+                    let seconds = Math.floor((timeLeft % 60000) / 1000);
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+                    document.getElementById('timer-time-<?php echo $estacion['numero_estacion']; ?>').textContent = minutes + ":" + seconds;
+                }, 1000);
+                document.getElementById('timer-time-<?php echo $estacion['numero_estacion']; ?>').dataset.interval = timerInterval.toString();
+            <?php elseif ($estacion['tiempo_libre']): ?>
+                // Inicializar cronómetro
+                let startTime = new Date('<?php echo $estacion['hora_inicio']; ?>').getTime();
+                let stopwatchInterval = setInterval(function () {
+                    let now = new Date().getTime();
+                    let elapsed = now - startTime;
+                    let hours = Math.floor(elapsed / (1000 * 60 * 60));
+                    let minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+                    let seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+                    hours = hours < 10 ? "0" + hours : hours;
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+                    document.getElementById('stopwatch-time-<?php echo $estacion['numero_estacion']; ?>').textContent = hours + ":" + minutes + ":" + seconds;
+                }, 1000);
+                document.getElementById('stopwatch-time-<?php echo $estacion['numero_estacion']; ?>').dataset.interval = stopwatchInterval.toString();
+            <?php endif; ?>
+        <?php endforeach; ?>
+
+        //no se puede separar a un documento js porque tiene funciones php, que no permite ejecutar en js
+       
     </script>
 </body>
 </html>

@@ -19,9 +19,12 @@ class Estacion_model extends CI_Model {
     }
 
     public function eliminar_estacion($numero_estacion) {
+        // Actualizamos la columna 'activa' a 0 para la estación con el número dado
+        $this->db->set('activa', 0);
         $this->db->where('numero_estacion', $numero_estacion);
-        $this->db->delete('estaciones');
+        $this->db->update('estaciones');
     }
+    
     
     
 }

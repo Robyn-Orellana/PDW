@@ -10,8 +10,9 @@ class Welcome extends CI_Controller {
 	public function index()
 	{
 		// Obtener todas las estaciones desde la base de datos
-        $data['estaciones'] = $this->Estacion_model->obtener_estaciones();
-		$this->load->view('welcome_message', $data);
+        $this->db->where('activa', 1); // Solo cargar estaciones activas
+        $data['estaciones'] = $this->db->get('estaciones')->result_array();
+        $this->load->view('welcome_message', $data);
 		
 	}
 
@@ -41,16 +42,18 @@ class Welcome extends CI_Controller {
         }
     }
 
+	
 	public function eliminar() {
-		// Obtener el número de la estación del formulario
-		$numero_estacion = $this->input->post('numero_estacion');
-	
-		// Cargar el modelo y eliminar la estación de la base de datos
-		$this->load->model('Estacion_model');
-		$this->Estacion_model->eliminar_estacion($numero_estacion);
-	
-		// Redirigir de nuevo a la página de inicio
-		redirect('welcome');
-	}
+        $numero_estacion = $this->input->post('numero_estacion');
+    
+        // Actualizar la columna 'activa' a 0 en la base de datos
+        $this->db->set('activa', 0);
+        $this->db->where('numero_estacion', $numero_estacion);
+        $this->db->update('estaciones');
+    
+        // Redirigir de nuevo a la página principal
+        redirect('welcome');
+    }
+    
 	
 }
