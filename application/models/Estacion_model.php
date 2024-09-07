@@ -8,23 +8,14 @@ class Estacion_model extends CI_Model {
         $this->load->database();
     }
 
-    public function guardar_estacion($data) {
-        $data['hora_inicio'] = date('Y-m-d H:i:s');
-        return $this->db->insert('estaciones', $data);  // 'estaciones' es el nombre de la tabla
+      // Función para insertar una nueva estación en la tabla 'estaciones'
+      public function insertar_estacion($data) {
+        $this->db->insert('estaciones', $data);
+    }
+    
+    // Función para obtener una estación por su número de estación
+    public function obtener_estacion_por_numero($numero_estacion) {
+        return $this->db->get_where('estaciones', array('numero_estacion' => $numero_estacion))->row_array();
     }
 
-    public function obtener_estaciones() {
-        $query = $this->db->get('estaciones');
-        return $query->result_array();  // Retorna todas las filas de resultados
-    }
-
-    public function eliminar_estacion($numero_estacion) {
-        // Actualizamos la columna 'activa' a 0 para la estación con el número dado
-        $this->db->set('activa', 0);
-        $this->db->where('numero_estacion', $numero_estacion);
-        $this->db->update('estaciones');
-    }
-    
-    
-    
 }
