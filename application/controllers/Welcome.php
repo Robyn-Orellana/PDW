@@ -59,6 +59,33 @@ class Welcome extends CI_Controller {
         redirect('welcome');
     }
 
+
+    public function iniciar_tiempo_normal() {
+        $id_estacion = $this->input->post('estacion_id');
+    
+        // Verificar si ya hay un tiempo en curso para esta estación
+        $this->db->where('id_estacion', $id_estacion);
+        $this->db->where('hora_fin', NULL);
+        $tiempo_activo = $this->db->get('tiempos_estaciones')->row_array();
+    
+        if (!$tiempo_activo) {
+            // Insertar nuevo registro con hora de inicio (sin duración)
+            $data = [
+                'id_estacion' => $id_estacion,
+                'hora_inicio' => date('Y-m-d H:i:s') // Hora actual
+            ];
+            $this->db->insert('tiempos_estaciones', $data);
+    
+            // Devolver respuesta JSON de éxito
+            echo json_encode(['success' => true, 'message' => 'Cronómetro normal iniciado']);
+        } else {
+            // Ya hay un tiempo activo
+            echo json_encode(['success' => false, 'message' => 'Ya hay un tiempo activo para esta estación.']);
+        }
+    }
+    
+
+
     // Iniciar tiempo (ya sea tiempo libre o cuenta regresiva)
     public function iniciar_tiempo_regresivo() {
         $id_estacion = $this->input->post('estacion_id');
