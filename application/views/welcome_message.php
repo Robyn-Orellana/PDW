@@ -6,7 +6,7 @@
     <title>Estaciones de Monitoreo</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?php echo base_url('vendor/css/styles.css?v=1.0'); ?>">
-
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 
 <body>
@@ -15,7 +15,7 @@
         <a href="<?php echo base_url('index.php/welcome/agregar'); ?>" class="btn btn-success mb-3">Agregar Estación</a>
         
         <!-- Contenedor para las tarjetas de estaciones -->
-        <div class="row">
+        <div class="row" id="estaciones-container">
             <?php if (!empty($estaciones)): ?>
                 <?php foreach ($estaciones as $estacion): ?>
                     <div id="card-estacion-<?php echo $estacion['numero_estacion']; ?>" class="col-md-4 mb-3">
@@ -52,12 +52,45 @@
             <?php endif; ?>
         </div>
     </div>
-    <script>
 
+    <script>
         let countdownIntervals = {}; // Para cronómetros regresivos
         let normalTimerIntervals = {}; // Para cronómetros normales
         let countdownEndTimes = {};  // Para hora de finalización de cronómetros regresivos
         let normalTimerEndTimes = {}; // Para hora de inicio de cronómetros normales
+
+        // Cargar el estado de los temporizadores desde localStorage
+        function loadTimersFromLocalStorage() {
+            const timers = JSON.parse(localStorage.getItem('timers')) || {};
+            for (let estacionId in timers) {
+                const timerData = timers[estacionId];
+                if (timerData.type === 'countdown') {
+                    countdownEndTimes[estacionId] = timerData.endTime;
+                    countdownIntervals[estacionId] = setInterval(() => updateCountdown(estacionId), 1000);
+                } else if (timerData.type === 'normal') {
+                    normalTimerEndTimes[estacionId] = timerData.startTime;
+                    normalTimerIntervals[estacionId] = setInterval(() => updateNormalTimer(estacionId), 1000);
+                }
+            }
+        }
+
+        // Guardar el estado de los temporizadores en localStorage
+        function saveTimersToLocalStorage() {
+            const timers = {};
+            for (let estacionId in countdownEndTimes) {
+                timers[estacionId] = {
+                    type: 'countdown',
+                    endTime: countdownEndTimes[estacionId]
+                };
+            }
+            for (let estacionId in normalTimerEndTimes) {
+                timers[estacionId] = {
+                    type: 'normal',
+                    startTime: normalTimerEndTimes[estacionId]
+                };
+            }
+            localStorage.setItem('timers', JSON.stringify(timers));
+        }
 
         // Confirmar eliminación de estación
         function confirmarEliminacion(estacionId) {
@@ -87,6 +120,7 @@
                             // Calcular la hora en que termina la cuenta regresiva
                             countdownEndTimes[estacionId] = Date.now() + duracion * 1000;
                             countdownIntervals[estacionId] = setInterval(() => updateCountdown(estacionId), 1000);
+                            saveTimersToLocalStorage(); // Guardar estado
                             alert(response.message); // Mensaje de éxito
                         } else {
                             alert(response.message); // Mensaje de error
@@ -99,101 +133,7 @@
             }
         }
 
-        //para reiniciar
-        function resetAndStartTimer(estacionId) {
-            // Detener cualquier intervalo en curso
-            if (countdownIntervals[estacionId]) {
-                clearInterval(countdownIntervals[estacionId]);
-            }
-
-            // Enviar solicitud AJAX al servidor para reiniciar el tiempo
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "<?php echo base_url('index.php/welcome/reiniciar_tiempo'); ?>", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    var response = JSON.parse(xhr.responseText);
-                    if (response.success) {
-                        // Reiniciar la visualización del cronómetro a "00h 00m 00s"
-                        document.getElementById(`timer-${estacionId}`).innerHTML = "00h 00m 00s";
-                        document.getElementById(`duracion-${estacionId}`).value = ''; // Limpiar input de duración
-                        delete countdownEndTimes[estacionId]; // Limpiar hora de finalización
-
-                        alert(response.message); // Mensaje de éxito
-
-                        // Iniciar automáticamente después de reiniciar
-                        startNormalTimer(estacionId); // Inicia el cronómetro de tiempo libre
-                    } else {
-                        alert(response.message); // Mensaje de error
-                    }
-                }
-            };
-            xhr.send("estacion_id=" + estacionId);
-        }
-
-        // Detener tiempo
-        function stopTimer(estacionId) {
-            if (countdownIntervals[estacionId]) {
-                clearInterval(countdownIntervals[estacionId]);
-
-                // Enviar solicitud AJAX al servidor para detener el tiempo
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", "<?php echo base_url('index.php/welcome/detener_tiempo_regresivo'); ?>", true);
-                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        var response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            delete countdownIntervals[estacionId]; // Limpiar el intervalo en frontend
-                            alert(response.message); // Mensaje de éxito
-                        } else {
-                            alert(response.message); // Mensaje de error
-                        }
-                    }
-                };
-                xhr.send("estacion_id=" + estacionId);
-            }
-        }
-
-        // Actualizar el temporizador de cuenta regresiva en la pantalla
-        function updateCountdown(estacionId) {
-            const now = Date.now();
-            const remainingTime = countdownEndTimes[estacionId] - now;
-
-            if (remainingTime <= 0) {
-                clearInterval(countdownIntervals[estacionId]);
-                document.getElementById(`timer-${estacionId}`).innerHTML = "00h 00m 00s";
-                
-                // Cuando la cuenta regresiva llega a cero, enviar solicitud AJAX para detener el tiempo
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", "<?php echo base_url('index.php/welcome/detener_tiempo_regresivo'); ?>", true);
-                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        var response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            alert("Tiempo finalizado y detenido automáticamente");
-                        } else {
-                            alert("Error al detener el tiempo: " + response.message);
-                        }
-                    }   
-                };
-                xhr.send("estacion_id=" + estacionId);
-
-            } else {
-                const hours = Math.floor(remainingTime / (1000 * 60 * 60));
-                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-
-                const timerElement = document.getElementById(`timer-${estacionId}`);
-                timerElement.innerHTML =
-                    (hours < 10 ? "0" + hours : hours) + "h " +
-                    (minutes < 10 ? "0" + minutes : minutes) + "m " +
-                    (seconds < 10 ? "0" + seconds : seconds) + "s";
-            }
-        }
-
-        // Iniciar cronómetro normal (ascendente)
+        // Iniciar cronómetro normal
         function startNormalTimer(estacionId) {
             // Enviar solicitud AJAX al servidor para iniciar el cronómetro
             var xhr = new XMLHttpRequest();
@@ -203,9 +143,9 @@
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     var response = JSON.parse(xhr.responseText);
                     if (response.success) {
-                        // Iniciar un temporizador que aumenta cada segundo
-                        countdownEndTimes[estacionId] = Date.now();  // Guardar el tiempo de inicio
-                        countdownIntervals[estacionId] = setInterval(() => updateNormalTimer(estacionId), 1000);
+                        normalTimerEndTimes[estacionId] = Date.now();
+                        normalTimerIntervals[estacionId] = setInterval(() => updateNormalTimer(estacionId), 1000);
+                        saveTimersToLocalStorage(); // Guardar estado
                         alert(response.message); // Mensaje de éxito
                     } else {
                         alert(response.message); // Mensaje de error
@@ -215,21 +155,151 @@
             xhr.send("estacion_id=" + estacionId);
         }
 
-        // Actualizar el cronómetro normal en pantalla (tiempo ascendente)
-        function updateNormalTimer(estacionId) {
-            const now = Date.now();
-            const elapsedTime = now - countdownEndTimes[estacionId]; // Calcular el tiempo transcurrido
+        // Actualizar cuenta regresiva
+        function updateCountdown(estacionId) {
+            let endTime = countdownEndTimes[estacionId];
+            let now = Date.now();
+            let timeLeft = endTime - now;
 
-            const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
-            const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+            if (timeLeft <= 0) {
+                clearInterval(countdownIntervals[estacionId]);
+                document.getElementById(`timer-${estacionId}`).innerHTML = "00h 00m 00s";
+                delete countdownEndTimes[estacionId];
+                saveTimersToLocalStorage(); // Guardar estado
+                return;
+            }
 
-            const timerElement = document.getElementById(`timer-${estacionId}`);
-            timerElement.innerHTML =
-                (hours < 10 ? "0" + hours : hours) + "h " +
-                (minutes < 10 ? "0" + minutes : minutes) + "m " +
-                (seconds < 10 ? "0" + seconds : seconds) + "s";
+            let hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.getElementById(`timer-${estacionId}`).innerHTML = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
         }
+
+        // Actualizar cronómetro normal
+        function updateNormalTimer(estacionId) {
+            let startTime = normalTimerEndTimes[estacionId];
+            let now = Date.now();
+            let timeElapsed = now - startTime;
+
+            let hours = Math.floor(timeElapsed / (1000 * 60 * 60));
+            let minutes = Math.floor((timeElapsed % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((timeElapsed % (1000 * 60)) / 1000);
+
+            document.getElementById(`timer-${estacionId}`).innerHTML = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+        }
+
+        // Función para formatear el tiempo
+        function pad(number) {
+            return number < 10 ? '0' + number : number;
+        }
+
+        // Reiniciar y empezar el cronómetro normal
+       // Reiniciar y empezar el cronómetro normal
+function resetAndStartTimer(estacionId) {
+    // Detener cualquier intervalo en curso
+    if (countdownIntervals[estacionId]) {
+        clearInterval(countdownIntervals[estacionId]);
+        delete countdownIntervals[estacionId];
+        delete countdownEndTimes[estacionId];
+    }
+    if (normalTimerIntervals[estacionId]) {
+        clearInterval(normalTimerIntervals[estacionId]);
+        delete normalTimerIntervals[estacionId];
+        delete normalTimerEndTimes[estacionId];
+    }
+
+    // Enviar solicitud AJAX al servidor para reiniciar el tiempo
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "<?php echo base_url('index.php/welcome/reiniciar_tiempo'); ?>", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            var response = JSON.parse(xhr.responseText);
+            if (response.success) {
+                document.getElementById(`timer-${estacionId}`).innerHTML = "00h 00m 00s";
+                document.getElementById(`duracion-${estacionId}`).value = ''; // Limpiar input de duración
+                saveTimersToLocalStorage(); // Guardar estado
+                alert(response.message); // Mensaje de éxito
+
+                // Iniciar automáticamente después de reiniciar
+                startNormalTimer(estacionId); // Inicia el cronómetro de tiempo libre
+            } else {
+                alert(response.message); // Mensaje de error
+            }
+        }
+    };
+    xhr.send("estacion_id=" + estacionId);
+}
+
+
+//detener tiempo
+function stopTimer(estacionId) {
+    let stopped = false;
+
+    // Detener cuenta regresiva si está en curso
+    if (countdownIntervals[estacionId]) {
+        clearInterval(countdownIntervals[estacionId]);
+        delete countdownIntervals[estacionId];
+        delete countdownEndTimes[estacionId];
+        document.getElementById(`timer-${estacionId}`).innerHTML = "00h 00m 00s";
+        stopped = true;
+
+        // Enviar solicitud AJAX al servidor para detener el tiempo regresivo
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "<?php echo base_url('index.php/welcome/detener_tiempo_regresivo'); ?>", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    alert("El tiempo regresivo se ha detenido correctamente."); // Aviso de éxito
+                } else {
+                    alert(response.message); // Mensaje de error
+                }
+            }
+        };
+        xhr.send("estacion_id=" + estacionId);
+    }
+
+    // Detener cronómetro normal si está en curso
+    if (normalTimerIntervals[estacionId]) {
+        clearInterval(normalTimerIntervals[estacionId]);
+        delete normalTimerIntervals[estacionId];
+        delete normalTimerEndTimes[estacionId];
+        document.getElementById(`timer-${estacionId}`).innerHTML = "00h 00m 00s";
+        stopped = true;
+
+        // Enviar solicitud AJAX al servidor para detener el cronómetro normal
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "<?php echo base_url('index.php/welcome/detener_tiempo_normal'); ?>", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    alert("El cronómetro normal se ha detenido correctamente."); // Aviso de éxito
+                } else {
+                    alert(response.message); // Mensaje de error
+                }
+            }
+        };
+        xhr.send("estacion_id=" + estacionId);
+    }
+
+    // Solo guardar el estado si se ha detenido al menos un temporizador
+    if (stopped) {
+        saveTimersToLocalStorage(); // Guardar estado en localStorage
+    }
+}
+
+
+
+
+        // Inicializar temporizadores al cargar la página
+        window.onload = function() {
+            loadTimersFromLocalStorage(); 
+        };
     </script>
 </body>
 </html>
