@@ -165,25 +165,43 @@
         }
 
         // Actualizar cuenta regresiva
-        function updateCountdown(estacionId) {
-            let endTime = countdownEndTimes[estacionId];
-            let now = Date.now();
-            let timeLeft = endTime - now;
+        // Actualizar cuenta regresiva
+function updateCountdown(estacionId) {
+    let endTime = countdownEndTimes[estacionId];
+    let now = Date.now();
+    let timeLeft = endTime - now;
 
-            if (timeLeft <= 0) {
-                clearInterval(countdownIntervals[estacionId]);
-                document.getElementById(`timer-${estacionId}`).innerHTML = "00h 00m 00s";
-                delete countdownEndTimes[estacionId];
-                saveTimersToLocalStorage(); // Guardar estado
-                return;
+    if (timeLeft <= 0) {
+        clearInterval(countdownIntervals[estacionId]);
+        document.getElementById(`timer-${estacionId}`).innerHTML = "00h 00m 00s";
+        delete countdownEndTimes[estacionId];
+        
+        // Enviar solicitud AJAX al servidor para guardar la hora de fin
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "<?php echo base_url('index.php/welcome/detener_tiempo_regresivo'); ?>", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    alert("El tiempo regresivo ha finalizado correctamente.");
+                } else {
+                    alert(response.message);
+                }
             }
+        };
+        xhr.send("estacion_id=" + estacionId);
 
-            let hours = Math.floor(timeLeft / (1000 * 60 * 60));
-            let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        saveTimersToLocalStorage(); // Guardar estado
+        return;
+    }
 
-            document.getElementById(`timer-${estacionId}`).innerHTML = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
-        }
+    let hours = Math.floor(timeLeft / (1000 * 60 * 60));
+    let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+    document.getElementById(`timer-${estacionId}`).innerHTML = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+}
 
         // Actualizar cronómetro normal
         function updateNormalTimer(estacionId) {
