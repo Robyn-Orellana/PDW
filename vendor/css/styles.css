@@ -23,17 +23,17 @@ body {
 
 /* Clase para aplicar la animación de desvanecimiento */
 .fade-out {
-    animation: fadeOut 0.5s forwards;
+    animation: fadeOut 0.6s forwards;
 }
 
 
 /* Estilo para las tarjetas */
 .card {
-    background-color: rgba(255, 255, 255, 0.1); /* Fondo blanco con transparencia */
-    border: 2px solid rgba(255, 255, 255, 0); /* Borde blanco con transparencia */
+    background-color: rgba(255, 255, 255, 0.144); /* Fondo blanco con transparencia */
+    border: 2px solid rgba(226, 162, 14, 0.718); /* Borde blanco con transparencia */
     color: white; /* Letras blancas dentro de la tarjeta */
     margin-bottom: 20px;
-    border-radius: 8px; /* Bordes redondeados opcional, ajusta según tu diseño */
+    border-radius: 15px; /* Bordes redondeados opcional, ajusta según tu diseño */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra opcional para dar profundidad */
 }
 
@@ -45,14 +45,16 @@ body {
 
 /* Estilo para los encabezados dentro de la tarjeta */
 .card-header {
-    background-color: rgba(0, 0, 0, 0.8); /* Fondo oscuro y opaco para el encabezado */
+    padding: 18px;
+    background-color: rgba(0, 0, 0, 0.968); /* Fondo oscuro y opaco para el encabezado */
     color: white; /* Letras blancas */
+   
 }
 
 /* Estilo para el temporizador */
 .timer {
     background-color: rgba(0, 0, 0, 0.7); /* Fondo negro con transparencia */
-    color: #f1c40f; /* Color del texto (amarillo dorado) */
+    color: #f1c40f; /* Color del texto  */
     font-size: 1.5rem;
     margin-top: 10px;
     padding: 10px; /* Agregar espacio interno */
@@ -108,7 +110,7 @@ body {
     position: absolute;
     right: 3px;
     top: -6px;
-    border: none;
+    border:none;
     background: transparent;
 }
 
@@ -124,7 +126,8 @@ body {
 /* Estilo específico para los botones de tiempo */
 .btn-info {
     background-color: rgba(255, 255, 255, 0.3); /* Fondo blanco medio transparente */
-    color: #0f0f0f; /* Color de texto acorde a info */
+    color: #0a0a0a; /* Color de texto acorde a info */
+    font-weight: bold;
     border: 1px solid rgba(255, 255, 255, 0.5); /* Borde blanco transparente */
     border-radius: 50px; /* Bordes completamente redondeados */
     padding: 0px 20px; /* Tamaño del botón */

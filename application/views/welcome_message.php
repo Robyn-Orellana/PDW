@@ -127,7 +127,7 @@
                         var response = JSON.parse(xhr.responseText);
                         if (response.success) {
                             // Calcular la hora en que termina la cuenta regresiva
-                            countdownEndTimes[estacionId] = Date.now() + duracion * 1000;
+                            countdownEndTimes[estacionId] = Date.now() + duracion * 60 * 1000;
                             countdownIntervals[estacionId] = setInterval(() => updateCountdown(estacionId), 1000);
                             saveTimersToLocalStorage(); // Guardar estado
                             alert(response.message); // Mensaje de éxito
