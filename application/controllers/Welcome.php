@@ -140,35 +140,35 @@ class Welcome extends CI_Controller {
         }
     }
     
+// Detener cronómetro normal
+public function detener_tiempo_normal() {
+    $id_estacion = $this->input->post('estacion_id');
 
-    public function detener_tiempo_normal() {
-        $id_estacion = $this->input->post('estacion_id');
-    
-        // Verificar si hay un tiempo activo
-        $this->db->where('id_estacion', $id_estacion);
-        $this->db->where('hora_fin', NULL);
-        $tiempo_activo = $this->db->get('tiempos_estaciones')->row_array();
-    
-        if ($tiempo_activo) {
-            $hora_inicio = new DateTime($tiempo_activo['hora_inicio']);
-            $hora_fin = new DateTime(); // Hora actual
-    
-            // Calcular la duración en segundos
-            $intervalo = $hora_inicio->diff($hora_fin);
-            $duracion_segundos = ($intervalo->h * 3600) + ($intervalo->i * 60) + $intervalo->s;
-    
-            // Actualizar la hora de fin y la duración
-            $this->db->where('id', $tiempo_activo['id']);
-            $this->db->update('tiempos_estaciones', [
-                'hora_fin' => $hora_fin->format('Y-m-d H:i:s'),
-                'duracion' => $duracion_segundos // Guardar duración en segundos
-            ]);
-    
-            echo json_encode(['success' => true, 'message' => 'Cronómetro normal detenido y duración guardada']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'No hay un tiempo activo para esta estación.']);
-        }
+    // Verificar si hay un tiempo activo
+    $this->db->where('id_estacion', $id_estacion);
+    $this->db->where('hora_fin', NULL); // Buscar un registro activo (sin hora de fin)
+    $tiempo_activo = $this->db->get('tiempos_estaciones')->row_array();
+
+    if ($tiempo_activo) {
+        $hora_inicio = new DateTime($tiempo_activo['hora_inicio']);
+        $hora_fin = new DateTime(); // Hora actual
+
+        // Calcular la duración en segundos
+        $intervalo = $hora_inicio->diff($hora_fin);
+        $duracion_segundos = ($intervalo->h * 3600) + ($intervalo->i * 60) + $intervalo->s;
+
+        // Actualizar la hora de fin y la duración
+        $this->db->where('id', $tiempo_activo['id']);
+        $this->db->update('tiempos_estaciones', [
+            'hora_fin' => $hora_fin->format('Y-m-d H:i:s'),
+            'duracion' => $duracion_segundos // Guardar duración en segundos
+        ]);
+
+        echo json_encode(['success' => true, 'message' => 'Cronómetro detenido y duración guardada.']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'No hay un cronómetro activo para esta estación.']);
     }
-    
+}
+
     
 }

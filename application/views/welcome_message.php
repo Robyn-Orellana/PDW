@@ -33,7 +33,15 @@
                                 
                                 <!-- Input para ingresar la duración de la cuenta regresiva -->
                                 <input type="number" id="duracion-<?php echo $estacion['id']; ?>" placeholder="Duración en segundos" class="form-control mb-2">
-                                
+            
+                                <div class="btn-group mt-2">
+                                <button onclick="setAndStartTime(<?php echo $estacion['id']; ?>, 15)" class="btn btn-info">+15 minutos</button>
+                                <button onclick="setAndStartTime(<?php echo $estacion['id']; ?>, 30)" class="btn btn-info">+30 minutos</button>
+                                <button onclick="setAndStartTime(<?php echo $estacion['id']; ?>, 60)" class="btn btn-info">+60 minutos</button>  
+                                </div>
+
+
+
                                 <!-- Botones para controlar el tiempo -->
                                 <div class="btn-group">
                                     <button onclick="startCountdown(<?php echo $estacion['id']; ?>)" class="btn btn-primary">Iniciar Tiempo Definido</button>
@@ -43,6 +51,7 @@
                                     <button onclick="resetAndStartTimer(<?php echo $estacion['id']; ?>)" class="btn btn-secondary">Reiniciar</button>
                                     <button onclick="stopTimer(<?php echo $estacion['id']; ?>)" class="btn btn-warning">Detener</button>
                                 </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -293,6 +302,17 @@ function stopTimer(estacionId) {
     }
 }
 
+// Función para establecer el tiempo y iniciar el cronómetro
+function setAndStartTime(estacionId, minutos) {
+    // Convertir minutos a segundos
+    let segundos = minutos * 60;
+
+    // Establecer la duración en el input correspondiente
+    document.getElementById(`duracion-${estacionId}`).value = segundos;
+
+    // Iniciar la cuenta regresiva con la duración especificada
+    startCountdown(estacionId);
+}
 
 
 

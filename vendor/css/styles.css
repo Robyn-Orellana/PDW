@@ -1,7 +1,7 @@
 /* Establecer fondo de la página */
 body {
     background-image: 
-        linear-gradient(
+        linear-gradient(  
             rgba(99, 137, 155, 0.5), /* Color de superposición y su transparencia */
             rgba(99, 137, 155, 0.5)
         ), 
