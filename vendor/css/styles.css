@@ -56,7 +56,7 @@ body {
     font-size: 1.5rem;
     margin-top: 10px;
     padding: 10px; /* Agregar espacio interno */
-    border-radius: 5px; /* Redondear las esquinas */
+    border-radius: 10px; /* Redondear las esquinas */
 }
 
 /* Estilo para los inputs */
@@ -68,7 +68,7 @@ body {
 .btn {
     margin: 5px 0;
     transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Transición suave para el color de fondo y sombra */
-    border-radius: 5px; /* Opcional: redondear las esquinas del botón */
+    border-radius: 25px; /* Opcional: redondear las esquinas del botón */
     padding: 10px 20px; /* Opcional: agregar algo de espacio interno */
 }
 
@@ -119,4 +119,21 @@ body {
 
 .card {
     position: relative;
+}
+
+/* Estilo específico para los botones de tiempo */
+.btn-info {
+    background-color: rgba(255, 255, 255, 0.3); /* Fondo blanco medio transparente */
+    color: #0f0f0f; /* Color de texto acorde a info */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Borde blanco transparente */
+    border-radius: 50px; /* Bordes completamente redondeados */
+    padding: 0px 20px; /* Tamaño del botón */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efecto hover para los botones */
+.btn-info:hover {
+    background-color: rgba(255, 255, 255, 0.5); /* Fondo un poco más claro al pasar el cursor */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil para destacar */
+    border-radius: 50px; /* Mantener bordes redondeados en hover */
 }
