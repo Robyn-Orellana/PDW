@@ -323,7 +323,7 @@ function stopTimer(estacionId) {
 // Función para establecer el tiempo y iniciar el cronómetro
 function setAndStartTime(estacionId, minutos) {
     // Convertir minutos a segundos
-    let segundos = minutos * 60;
+    let segundos = minutos ;
 
     // Establecer la duración en el input correspondiente
     document.getElementById(`duracion-${estacionId}`).value = segundos;
