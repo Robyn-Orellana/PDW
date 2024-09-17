@@ -1,0 +1,142 @@
+/* Establecer fondo de la página */
+body {
+    background-image: 
+        linear-gradient(  
+            rgba(99, 137, 155, 0.5), /* Color de superposición y su transparencia */
+            rgba(99, 137, 155, 0.5)
+        ), 
+        url('../imgs/wallcat.jpg'); /* Imagen de fondo */
+    background-size: cover; /* Ajusta la imagen para cubrir todo el fondo */
+    background-position: center; /* Centra la imagen en el fondo */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-attachment: fixed; /* Fija la imagen en su lugar durante el desplazamiento */
+    color: white; /* Color del texto para que contraste con el fondo */
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* Animación de desvanecimiento */
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Clase para aplicar la animación de desvanecimiento */
+.fade-out {
+    animation: fadeOut 0.6s forwards;
+}
+
+
+/* Estilo para las tarjetas */
+.card {
+    background-color: rgba(255, 255, 255, 0.144); /* Fondo blanco con transparencia */
+    border: 2px solid rgba(226, 162, 14, 0.718); /* Borde blanco con transparencia */
+    color: white; /* Letras blancas dentro de la tarjeta */
+    margin-bottom: 20px;
+    border-radius: 15px; /* Bordes redondeados opcional, ajusta según tu diseño */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra opcional para dar profundidad */
+}
+
+/* Efecto al pasar el cursor sobre la tarjeta */
+.card:hover {
+    transform: translateY(-10px); /* Eleva la tarjeta hacia arriba */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.678); /* Añadir sombra para el efecto de elevación */
+}
+
+/* Estilo para los encabezados dentro de la tarjeta */
+.card-header {
+    padding: 18px;
+    background-color: rgba(0, 0, 0, 0.968); /* Fondo oscuro y opaco para el encabezado */
+    color: white; /* Letras blancas */
+   
+}
+
+/* Estilo para el temporizador */
+.timer {
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo negro con transparencia */
+    color: #f1c40f; /* Color del texto  */
+    font-size: 1.5rem;
+    margin-top: 10px;
+    padding: 10px; /* Agregar espacio interno */
+    border-radius: 10px; /* Redondear las esquinas */
+}
+
+/* Estilo para los inputs */
+.form-control {
+    margin-bottom: 10px;
+}
+
+/* Estilo para los botones */
+.btn {
+    margin: 5px 0;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Transición suave para el color de fondo y sombra */
+    border-radius: 25px; /* Opcional: redondear las esquinas del botón */
+    padding: 10px 20px; /* Opcional: agregar algo de espacio interno */
+}
+
+/* Cambiar color de fondo y sombra cuando el cursor está sobre el botón */
+.btn:hover {
+    filter: hue-rotate(90deg); /* Efecto arcoíris en el hover */
+    border-radius: 10px; /* Radio de borde en el hover */
+}
+
+/* Estilos específicos para diferentes botones (opcional) */
+.btn-primary:hover {
+    background-color: rgba(0, 123, 255, 0.7); /* Azul claro con difuminado */
+}
+
+.btn-success:hover {
+    background-color: rgba(40, 167, 69, 0.7); /* Verde claro con difuminado */
+}
+
+.btn-warning:hover {
+    background-color: rgba(255, 193, 7, 0.7); /* Amarillo claro con difuminado */
+}
+
+.btn-danger:hover {
+    background-color: rgba(220, 53, 69, 0.7); /* Rojo claro con difuminado */
+}
+
+.btn-group {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-group .btn {
+    margin-right: 5px;
+}
+
+.card-header .btn-danger {
+    position: absolute;
+    right: 3px;
+    top: -6px;
+    border:none;
+    background: transparent;
+}
+
+.card-header .btn-danger img {
+    width: 30px; /* Ajusta el tamaño según sea necesario */
+    height: auto;
+}
+
+.card {
+    position: relative;
+}
+
+/* Estilo específico para los botones de tiempo */
+.btn-info {
+    background-color: rgba(255, 255, 255, 0.3); /* Fondo blanco medio transparente */
+    color: #0a0a0a; /* Color de texto acorde a info */
+    font-weight: bold;
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Borde blanco transparente */
+    border-radius: 50px; /* Bordes completamente redondeados */
+    padding: 0px 20px; /* Tamaño del botón */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efecto hover para los botones */
+.btn-info:hover {
+    background-color: rgba(255, 255, 255, 0.5); /* Fondo un poco más claro al pasar el cursor */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil para destacar */
+    border-radius: 50px; /* Mantener bordes redondeados en hover */
+}

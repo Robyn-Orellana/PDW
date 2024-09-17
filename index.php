@@ -36,6 +36,8 @@
  * @filesource
  */
 
+date_default_timezone_set('America/Mexico_City');
+
 /*
  *---------------------------------------------------------------
  * APPLICATION ENVIRONMENT
@@ -313,3 +315,4 @@ switch (ENVIRONMENT)
  * And away we go...
  */
 require_once BASEPATH.'core/CodeIgniter.php';
+
