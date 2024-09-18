@@ -2,7 +2,7 @@
 body {
     background-image: 
         linear-gradient(  
-            rgba(99, 137, 155, 0.5), /* Color de superposición y su transparencia */
+            rgba(163, 73, 55, 0.5), /* Color de superposición y su transparencia */
             rgba(99, 137, 155, 0.5)
         ), 
         url('../imgs/wallcat.jpg'); /* Imagen de fondo */
@@ -14,6 +14,21 @@ body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
+
+
+.cinta_2{
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo negro con transparencia */
+    color: #f1c40f; /* Color del texto  */
+    font-size: 1.5rem;
+    margin-top: 10px;
+    padding: 10px; /* Agregar espacio interno */
+    border-radius: 10px; /* Redondear las esquinas */
+
+}
+
+
+
+
 
 /* Animación de desvanecimiento */
 @keyframes fadeOut {
@@ -140,3 +155,4 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil para destacar */
     border-radius: 50px; /* Mantener bordes redondeados en hover */
 }
+

@@ -10,10 +10,18 @@
 </head>
 
 <body>
+
+    <div class ="cinta_2">
+
+        <a href="<?php echo base_url('index.php/welcome/agregar'); ?>" class="btn btn-success mb-3">Agregar Estación</a>
+        <a href="<?php echo base_url('index.php/welcome/notifi'); ?>" class="btn btn-success mb-3">AMINISTRAR NOTIFICACIONES</a>
+
+    </div>
+
+
     <div class="container mt-5">
         <!-- Botón para agregar una nueva estación -->
-        <a href="<?php echo base_url('index.php/welcome/agregar'); ?>" class="btn btn-success mb-3">Agregar Estación</a>
-        
+       
         <!-- Contenedor para las tarjetas de estaciones -->
         <div class="row" id="estaciones-container">
             <?php if (!empty($estaciones)): ?>
@@ -62,6 +70,11 @@
         </div>
     </div>
 
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
     <script>
         let countdownIntervals = {}; // Para cronómetros regresivos
         let normalTimerIntervals = {}; // Para cronómetros normales
@@ -104,6 +117,9 @@
         // Confirmar eliminación de estación
         function confirmarEliminacion(estacionId) {
             const confirmar = confirm("¿Estás seguro de que quieres eliminar esta estación?");
+
+			
+
             if (confirmar) {
                 // Redirigir al usuario para eliminar la estación
                 window.location.href = "<?php echo base_url('index.php/welcome/eliminar/'); ?>" + estacionId;
@@ -138,7 +154,12 @@
                 };
                 xhr.send("estacion_id=" + estacionId + "&duracion=" + duracion);
             } else {
-                alert("Por favor, ingresa una duración válida.");
+				Swal.fire({
+            icon: 'info',
+            title: 'AVISO!',
+            text: 'Define el tiempo',
+            confirmButtonColor: '#007bff'
+        });
             }
         }
 
@@ -339,5 +360,9 @@ function setAndStartTime(estacionId, minutos) {
             loadTimersFromLocalStorage(); 
         };
     </script>
+	
+	
+
+
 </body>
 </html>
