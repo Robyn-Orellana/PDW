@@ -172,5 +172,6 @@ public function detener_tiempo_normal() {
     }
 }
 
+//probando los cambios en una nueva rama
     
 }
