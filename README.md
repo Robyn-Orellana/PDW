@@ -1,72 +1,78 @@
-README
+Para documentar la instalación y uso de tu aplicación en un archivo `.md`, aquí te dejo una estructura basada en lo que solicitaste:
 
-Descripción del Proyecto
-Este sistema gestiona el tiempo de uso de varias estaciones, como en un café internet o espacios compartidos, mediante cronómetros independientes. Cada estación cuenta con un cronómetro configurable para cada usuario, permitiendo un control preciso del tiempo. El sistema está diseñado para ser eficiente y fácil de usar, con una interfaz clara para gestionar múltiples estaciones simultáneamente.
+```markdown
+# Instrucciones para Montar la Aplicación Localmente
 
-Funcionalidades Principales
-Soporte para múltiples estaciones: Gestión de varios cronómetros, cada uno vinculado a una estación específica.
+## Requisitos del Sistema
+1. **Servidor Local**: Necesitarás un entorno de servidor local como XAMPP o WAMP.
+2. **PHP**: Asegúrate de tener PHP instalado (versiones compatibles: 7.x o superior).
+3. **Base de Datos MySQL**: Es necesaria una base de datos MySQL. Puedes usar phpMyAdmin para gestionarla.
+4. **Git**: Para clonar el repositorio, es recomendable tener Git instalado.
 
-Interfaz gráfica atractiva: Diseño moderno que organiza los cronómetros en módulos fáciles de manejar.
+## Instalación
 
-Registo de Usuario: se podrá registrar el nombre del usuario que desea utilizar una estación.
-
-Selección de tiempo personalizada: Los usuarios pueden elegir el tiempo que desean usar en cada estación.
-
-Control independiente de cronómetros: Cada cronómetro funciona de manera autónoma.
-
-Controles básicos: Agregar estación, Iniciar tiempo definido, Iniciar tiempo normal,  Opción de iniciar,
-y detener.
-
-Tecnologías Utilizadas
-Frontend: HTML, CSS, JavaScript
-Base de Datos: MySQL
-
-Frameworks/Librerías:
-CodeIgniter (PHP para backend)
-
-Entorno de Desarrollo: Visual Studio Code
-
-Requisitos del Sistema
-Node.js v20.17.0 
-npm v10.8.3 
-MySQL
-XAMPP
-
-Instalación y Configuración 
-
+### 1. Clonar el Repositorio
+Clona este repositorio desde GitHub:
+```bash
 git clone https://github.com/Robyn-Orellana/PDW.git
+```
 
-crea la base de datos:  cafeinternet
-CREATE TABLE estaciones (
-    id INT AUTO_INCREMENT PRIMARY KEY, -- Identificador único de cada equipo
-    numero_estacion INT NOT NULL, -- Número de la estación
-    nombre_estacion VARCHAR(255) NOT NULL, -- Nombre de la estación o equipo  
-    activa BOOLEAN DEFAULT TRUE -- Indica si la estación está activa
-);
+### 2. Configuración del Servidor
+Coloca la carpeta clonada en el directorio de tu servidor local (`htdocs` para XAMPP, `www` para WAMP).
 
+### 3. Configuración de la Base de Datos
+1. Crea una nueva base de datos MySQL desde phpMyAdmin o usando la consola MySQL.
+2. Importa el archivo de la base de datos proporcionado (`database.sql`) a la nueva base de datos creada.
+3. Edita el archivo de configuración del proyecto para conectar la base de datos:
+   - Ve al archivo `application/config/database.php`.
+   - Cambia las credenciales de acceso a la base de datos:
+   ```php
+   'username' => 'tu_usuario',
+   'password' => 'tu_contraseña',
+   'database' => 'nombre_de_la_base_de_datos',
+   ```
 
-CREATE TABLE tiempos_estaciones (
-    id INT AUTO_INCREMENT PRIMARY KEY, -- Identificador único para cada registro de tiempo
-    id_estacion INT NOT NULL, -- Relaciona con la tabla 'estaciones'
-    hora_inicio DATETIME NOT NULL, -- Tiempo de inicio
-    hora_fin DATETIME, -- Tiempo de fin (NULL si sigue activa)
+### 4. Configurar las Variables de Entorno
+Asegúrate de que el archivo `.env` o los archivos de configuración contengan los valores correctos para tu entorno local.
 
-    FOREIGN KEY (id_estacion) REFERENCES estaciones(id) -- Relación con la tabla 'estaciones'
-    	
-);
+### 5. Ejecutar la Aplicación
+1. Inicia tu servidor local (XAMPP o WAMP).
+2. Abre el navegador y accede a `http://localhost/PDW`.
 
-ALTER TABLE tiempos_estaciones ADD COLUMN duracion INT DEFAULT NULL;
+## Características de Código Abierto
+Este proyecto es **de código abierto**, lo que significa que es libre para usar, modificar y distribuir. Cualquiera puede contribuir al desarrollo, mejorar las funcionalidades existentes o adaptar la aplicación según sus necesidades.
 
+### Licencia
+Este proyecto está licenciado bajo la [Licencia MIT](LICENSE). Puedes consultar el archivo de licencia para más detalles.
 
+### Acceso al Código Fuente
+El código fuente de este proyecto está disponible en [GitHub](https://github.com/Robyn-Orellana/PDW).
 
-Instrucciones de Uso:
+# Contribuciones
+Las contribuciones son bienvenidas. Si deseas contribuir, sigue estos pasos:
 
- Agregar estación: Al presionar este botón, se  podrá ingresar el nombre del cliente y el número de estación que desea utilizar. Esto crea una nueva estación con un cronómetro asignado, permitiendo que cada cliente tenga un control individualizado de su tiempo.
+1. Haz un fork del proyecto.
+2. Crea una nueva rama:
+   ```bash
+   git checkout -b feature/nueva-funcionalidad
+   ```
+3. Haz tus cambios y realiza un commit:
+   ```bash
+   git commit -m "Descripción del cambio"
+   ```
+4. Envía tus cambios al repositorio remoto:
+   ```bash
+   git push origin feature/nueva-funcionalidad
+   ```
+5. Crea un Pull Request en GitHub.
+```
 
-Iniciar tiempo definido: Esta opción permite  establecer un tiempo específico en segundos para el cronómetro. Si el usuario no ingresa un tiempo antes de iniciar, el sistema enviará una alerta para recordarle que debe definir un tiempo antes de continuar. Es ideal para cuando se requiere un control preciso del tiempo de uso.
+Este archivo guía al usuario a través de la configuración y puesta en marcha de la aplicación en un servidor local. Además, fomenta la contribución al proyecto siguiendo buenas prácticas de Git.
 
-Iniciar tiempo normal: En esta opción, el cronómetro comenzará a correr automáticamente sin necesidad de que el usuario ingrese un tiempo específico. Es útil cuando se quiere simplemente medir el tiempo transcurrido sin definir un límite.
+El manual de usuario y manual tecnico estan en la ruta PDW/Informacion ahí encontraras toda la informacion sobre como utilizar la pagina y su estructura interna para mejoras o cambios que nececites. 
+El query para la creacion de la base de datos igualmente se encuentra en PDW/Informacion, el cual solo deberas de ejecutar en tu base de datos para la crecion de la base de datos y las tablas. 
 
-Iniciar: Permite comenzar el cronómetro desde el tiempo definido o desde cero, según la configuración seleccionada.
-
-Detener: Detiene el cronómetro en cualquier momento, pausando el conteo. El tiempo se detendrá y quedará guardado en la estación y en la base de datos, permitiendo que se reanude o reinicie más tarde si es necesario.
+Si Deseas contactar al equipo de creacion del proyecto, puedes enviar un correo a los siquiente emails:
+robynorellana16@gmial.com
+samuelgeronimo.rosales@gmail.com
+ferarroyo0102@gmail.com
