@@ -38,13 +38,7 @@
                                     <img src="<?php echo base_url('vendor/imgs/elim.png'); ?>" alt="Eliminar">
                                 </button>
                                 <!-- Botón para bloquear individualmente -->
-                                <button class="btn btn-warning bloquear-individual" data-id="<?php echo $estacion['id']; ?>">Bloquear</button>
-                                <button id="desbloquear-todas" class="btn btn-outline-dark">Desbloquear Tarjeta</button>
-                                <!-- Input oculto para ingresar el PIN -->
-                                <div id="pin-container" style="display:none; margin-top: 10px;">
-                                    <input type="password" id="input-pin" class="form-control" placeholder="Ingrese PIN">
-                                    <button id="validar-pin" class="btn btn-primary mt-2">Validar PIN</button>
-                                </div>      
+                                <button class="btn btn-warning bloquear-individual" data-id="<?php echo $estacion['id']; ?>">Bloquear</button>     
                             </div>
                             <div class="card-body">
                                 <div class="card-title">Nombre de la Estación: <?php echo $estacion['nombre_estacion']; ?></div>
@@ -114,7 +108,7 @@
             });
         }
 
-        // Definir el PIN correcto (esto puede estar guardado en la base de datos y verificarse en el servidor, pero para este ejemplo, se guarda en una variable)
+        // Definir el PIN correcto
             const pinCorrecto = "1234"; // Aquí puedes cambiar el PIN
             let intentos = 3; // Limitar los intentos
             // Mostrar el textbox para ingresar el PIN al hacer clic en "Desbloquear Todas las Tarjetas"
@@ -349,7 +343,7 @@ function updateCountdown(estacionId) {
             return number < 10 ? '0' + number : number;
         }
 
-        // Reiniciar y empezar el cronómetro normal
+        
        // Reiniciar y empezar el cronómetro normal
 function resetAndStartTimer(estacionId) {
     // Detener cualquier intervalo en curso
@@ -470,6 +464,7 @@ function setAndStartTime(estacionId, minutos) {
             const cardId = card.id;
             if (cargarEstadoDesdeLocalStorage(cardId)) {
                 bloquearTarjetaIndividual(cardId);
+                desbloquearTarjetaIndividual(cardId);
             }
             });
             
