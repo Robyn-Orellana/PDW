@@ -73,3 +73,4 @@ Si Deseas contactar al equipo de creacion del proyecto, puedes enviar un correo 
 robynorellana16@gmial.com
 samuelgeronimo.rosales@gmail.com
 ferarroyo0102@gmail.com
+Reyes502rodrigo@gmail.com
