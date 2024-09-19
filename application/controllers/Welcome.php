@@ -12,6 +12,7 @@ class Welcome extends CI_Controller {
         // Obtener estaciones activas
         $this->db->where('activa', 1);
         $estaciones = $this->db->get('estaciones')->result_array();
+       
 
         foreach ($estaciones as &$estacion) {
             // Verificar si hay un tiempo activo para esta estación
@@ -172,6 +173,5 @@ public function detener_tiempo_normal() {
     }
 }
 
-//probando los cambios en una nueva rama
-    
 }
+    

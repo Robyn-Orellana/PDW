@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estaciones de Monitoreo</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <link rel="stylesheet" href="<?php echo base_url('vendor/css/styles.css?v=1.0'); ?>">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
@@ -13,34 +13,41 @@
     <div class="container mt-5">
         <!-- Botón para agregar una nueva estación -->
         <a href="<?php echo base_url('index.php/welcome/agregar'); ?>" class="btn btn-success mb-3">Agregar Estación</a>
+
+        <!-- Botones para bloquear/desbloquear todas las tarjetas -->
+        <div class="mb-4">
+            <button id="bloquear-todas" class="btn btn-danger">Bloquear Todas las Tarjetas</button>
+            <button id="desbloquear-todas" class="btn btn-info">Desbloquear Todas las Tarjetas</button>
+           
+        </div>
         
         <!-- Contenedor para las tarjetas de estaciones -->
         <div class="row" id="estaciones-container">
             <?php if (!empty($estaciones)): ?>
                 <?php foreach ($estaciones as $estacion): ?>
                     <div id="card-estacion-<?php echo $estacion['numero_estacion']; ?>" class="col-md-4 mb-3">
-                        <div class="card">
+                        <div class="card" id="tarjeta-<?php echo $estacion['id']; ?>">
                             <div class="card-header">
                                 Estación Nº <?php echo $estacion['numero_estacion']; ?>
                                 <!-- Botón para eliminar la estación con imagen -->
                                 <button onclick="confirmarEliminacion(<?php echo $estacion['id']; ?>)" class="btn btn-danger">
                                     <img src="<?php echo base_url('vendor/imgs/elim.png'); ?>" alt="Eliminar">
                                 </button>
+                                <!-- Botón para bloquear individualmente -->
+                                <button class="btn btn-warning bloquear-individual" data-id="<?php echo $estacion['id']; ?>">Bloquear</button>
                             </div>
                             <div class="card-body">
                                 <div class="card-title">Nombre de la Estación: <?php echo $estacion['nombre_estacion']; ?></div>
                                 <div class="timer" id="timer-<?php echo $estacion['id']; ?>">00h 00m 00s</div>
-                                
+
                                 <!-- Input para ingresar la duración de la cuenta regresiva -->
                                 <input type="number" id="duracion-<?php echo $estacion['id']; ?>" placeholder="Duración en segundos" class="form-control mb-2">
             
                                 <div class="btn-group mt-2">
-                                <button onclick="setAndStartTime(<?php echo $estacion['id']; ?>, 15)" class="btn btn-info">+15 minutos</button>
-                                <button onclick="setAndStartTime(<?php echo $estacion['id']; ?>, 30)" class="btn btn-info">+30 minutos</button>
-                                <button onclick="setAndStartTime(<?php echo $estacion['id']; ?>, 60)" class="btn btn-info">+60 minutos</button>  
+                                    <button onclick="setAndStartTime(<?php echo $estacion['id']; ?>, 15)" class="btn btn-info">+15 minutos</button>
+                                    <button onclick="setAndStartTime(<?php echo $estacion['id']; ?>, 30)" class="btn btn-info">+30 minutos</button>
+                                    <button onclick="setAndStartTime(<?php echo $estacion['id']; ?>, 60)" class="btn btn-info">+60 minutos</button>  
                                 </div>
-
-
 
                                 <!-- Botones para controlar el tiempo -->
                                 <div class="btn-group">
@@ -50,8 +57,7 @@
                                 <div class="btn-group mt-2">
                                     <button onclick="resetAndStartTimer(<?php echo $estacion['id']; ?>)" class="btn btn-secondary">Reiniciar</button>
                                     <button onclick="stopTimer(<?php echo $estacion['id']; ?>)" class="btn btn-warning">Detener</button>
-                                </div>
-                                
+                                </div>  
                             </div>
                         </div>
                     </div>
@@ -62,7 +68,87 @@
         </div>
     </div>
 
+    <!-- JavaScript para bloquear estaciones -->
     <script>
+
+        // Función para guardar el estado de la tarjeta en el LocalStorage
+        function guardarEstadoEnLocalStorage(id, estado) {
+            localStorage.setItem(id, estado ? "bloqueada" : "desbloqueada");
+        }
+
+        // Función para cargar el estado de las tarjetas desde el LocalStorage
+        function cargarEstadoDesdeLocalStorage(id) {
+            return localStorage.getItem(id) === "bloqueada";
+        }
+
+        // Función para bloquear una tarjeta individualmente
+        function bloquearTarjetaIndividual(cardId) {
+            const card = document.getElementById(cardId);
+            card.classList.add("bloqueada");
+            guardarEstadoEnLocalStorage(cardId, true);
+
+            // Deshabilitar todos los botones excepto el botón de desbloquear
+            const botones = card.querySelectorAll("button, a");
+            botones.forEach(boton => {
+                
+                    boton.setAttribute("disabled", "disabled");
+                
+            });
+        }
+
+        // Función para desbloquear una tarjeta individualmente
+        function desbloquearTarjetaIndividual(cardId) {
+            const card = document.getElementById(cardId);
+            card.classList.remove("bloqueada");
+            guardarEstadoEnLocalStorage(cardId, false);
+
+            // Habilitar todos los botones nuevamente
+            const botones = card.querySelectorAll("button, a");
+            botones.forEach(boton => {
+                boton.removeAttribute("disabled");
+            });
+        }
+
+        // Función para bloquear todas las tarjetas
+        function bloquearTodasLasTarjetas() {
+            const cards = document.querySelectorAll(".card");
+            cards.forEach(card => {
+                bloquearTarjetaIndividual(card.id);
+            });
+        }
+
+        // Función para desbloquear todas las tarjetas
+        function desbloquearTodasLasTarjetas() {
+            const cards = document.querySelectorAll(".card");
+            cards.forEach(card => {
+                desbloquearTarjetaIndividual(card.id);
+            });
+        }
+
+        // Event listener para bloquear todas las tarjetas
+        document.getElementById("bloquear-todas").addEventListener("click", function() {
+            bloquearTodasLasTarjetas();
+        });
+
+        // Event listener para desbloquear todas las tarjetas
+        document.getElementById("desbloquear-todas").addEventListener("click", function() {
+            desbloquearTodasLasTarjetas();
+        });
+
+        // Event listeners para los botones de bloquear individualmente
+        const botonesBloquearIndividual = document.querySelectorAll(".bloquear-individual");
+        botonesBloquearIndividual.forEach(boton => {
+            boton.addEventListener("click", function() {
+                const cardId = "tarjeta-" + boton.getAttribute("data-id");
+                bloquearTarjetaIndividual(cardId);
+            });
+        });
+
+        
+//funcion bloquear y desbloquear funcionando sin pin 
+      
+        // Resto del código...
+
         let countdownIntervals = {}; // Para cronómetros regresivos
         let normalTimerIntervals = {}; // Para cronómetros normales
         let countdownEndTimes = {};  // Para hora de finalización de cronómetros regresivos
@@ -337,7 +423,17 @@ function setAndStartTime(estacionId, minutos) {
         // Inicializar temporizadores al cargar la página
         window.onload = function() {
             loadTimersFromLocalStorage(); 
+            const cards = document.querySelectorAll(".card");
+            cards.forEach(card => {
+            const cardId = card.id;
+            if (cargarEstadoDesdeLocalStorage(cardId)) {
+                bloquearTarjetaIndividual(cardId);
+            }
+            });
+            
         };
+
+
     </script>
 </body>
 </html>
