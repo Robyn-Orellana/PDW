@@ -17,8 +17,12 @@
         <!-- Botones para bloquear/desbloquear todas las tarjetas -->
         <div class="mb-4">
             <button id="bloquear-todas" class="btn btn-danger">Bloquear Todas las Tarjetas</button>
-            <button id="desbloquear-todas" class="btn btn-info">Desbloquear Todas las Tarjetas</button>
-           
+            <button id="desbloquear-todas" class="btn btn-outline-dark">Desbloquear Todas las Tarjetas</button>
+            <!-- Input oculto para ingresar el PIN -->
+            <div id="pin-container" style="display:none; margin-top: 10px;">
+                <input type="password" id="input-pin" class="form-control" placeholder="Ingrese PIN">
+                <button id="validar-pin" class="btn btn-primary mt-2">Validar PIN</button>
+            </div>          
         </div>
         
         <!-- Contenedor para las tarjetas de estaciones -->
@@ -35,6 +39,12 @@
                                 </button>
                                 <!-- Botón para bloquear individualmente -->
                                 <button class="btn btn-warning bloquear-individual" data-id="<?php echo $estacion['id']; ?>">Bloquear</button>
+                                <button id="desbloquear-todas" class="btn btn-outline-dark">Desbloquear Tarjeta</button>
+                                <!-- Input oculto para ingresar el PIN -->
+                                <div id="pin-container" style="display:none; margin-top: 10px;">
+                                    <input type="password" id="input-pin" class="form-control" placeholder="Ingrese PIN">
+                                    <button id="validar-pin" class="btn btn-primary mt-2">Validar PIN</button>
+                                </div>      
                             </div>
                             <div class="card-body">
                                 <div class="card-title">Nombre de la Estación: <?php echo $estacion['nombre_estacion']; ?></div>
@@ -96,34 +106,69 @@
             });
         }
 
-        // Función para desbloquear una tarjeta individualmente
-        function desbloquearTarjetaIndividual(cardId) {
-            const card = document.getElementById(cardId);
-            card.classList.remove("bloqueada");
-            guardarEstadoEnLocalStorage(cardId, false);
-
-            // Habilitar todos los botones nuevamente
-            const botones = card.querySelectorAll("button, a");
-            botones.forEach(boton => {
-                boton.removeAttribute("disabled");
-            });
-        }
-
-        // Función para bloquear todas las tarjetas
-        function bloquearTodasLasTarjetas() {
+         // Función para bloquear todas las tarjetas
+         function bloquearTodasLasTarjetas() {
             const cards = document.querySelectorAll(".card");
             cards.forEach(card => {
                 bloquearTarjetaIndividual(card.id);
             });
         }
 
-        // Función para desbloquear todas las tarjetas
-        function desbloquearTodasLasTarjetas() {
-            const cards = document.querySelectorAll(".card");
-            cards.forEach(card => {
-                desbloquearTarjetaIndividual(card.id);
+        // Definir el PIN correcto (esto puede estar guardado en la base de datos y verificarse en el servidor, pero para este ejemplo, se guarda en una variable)
+            const pinCorrecto = "1234"; // Aquí puedes cambiar el PIN
+            let intentos = 3; // Limitar los intentos
+            // Mostrar el textbox para ingresar el PIN al hacer clic en "Desbloquear Todas las Tarjetas"
+            document.getElementById("desbloquear-todas").addEventListener("click", function() {
+                document.getElementById("pin-container").style.display = "block";
             });
-        }
+
+            // Validar el PIN al hacer clic en el botón de validar PIN
+            document.getElementById("validar-pin").addEventListener("click", function() {
+                const pinIngresado = document.getElementById("input-pin").value;
+
+                if (pinIngresado === pinCorrecto) {
+                    // Si el PIN es correcto, desbloquear todas las tarjetas
+                    desbloquearTodasLasTarjetas();
+                    alert("Tarjetas desbloqueadas correctamente.");
+                    document.getElementById("pin-container").style.display = "none"; // Ocultar el campo del PIN
+                    
+                     // Función para desbloquear todas las tarjetas
+                    function desbloquearTodasLasTarjetas() {
+                        const cards = document.querySelectorAll(".card");
+                        cards.forEach(card => {
+                        desbloquearTarjetaIndividual(card.id);
+                    });
+                    }
+
+                    // Función para desbloquear una tarjeta individual
+                    function desbloquearTarjetaIndividual(cardId) {
+                        const card = document.getElementById(cardId);
+                        card.classList.remove("bloqueada");
+
+                        // Reactivar los botones en cada tarjeta
+                        const botones = card.querySelectorAll("button, a");
+                        botones.forEach(boton => {
+                            boton.removeAttribute("disabled");
+                        });
+                    }
+
+                } else {
+                    intentos--;
+                    alert("PIN incorrecto. Te quedan " + intentos + " intentos.");
+                    if (intentos <= 0) {
+                        alert("Has agotado todos los intentos. Intenta más tarde.");
+                        document.getElementById("pin-container").style.display = "none"; // Ocultar el campo del PIN
+                        document.getElementById("desbloquear-todas").setAttribute("disabled", "disabled"); // Bloquear el botón
+                    }
+                    
+                }
+
+                    // Borrar el campo del PIN después de cada validación
+                    document.getElementById("input-pin").value = "";
+
+                
+            });
+
 
         // Event listener para bloquear todas las tarjetas
         document.getElementById("bloquear-todas").addEventListener("click", function() {
@@ -142,10 +187,7 @@
                 const cardId = "tarjeta-" + boton.getAttribute("data-id");
                 bloquearTarjetaIndividual(cardId);
             });
-        });
-
-        
-//funcion bloquear y desbloquear funcionando sin pin 
+        }); //funcion bloquear y desbloquear funcionando con pin 
       
         // Resto del código...
 
