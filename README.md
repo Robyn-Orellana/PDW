@@ -1,5 +1,3 @@
-Para documentar la instalación y uso de tu aplicación en un archivo `.md`, aquí te dejo una estructura basada en lo que solicitaste:
-
 ```markdown
 # Instrucciones para Montar la Aplicación Localmente
 
@@ -64,8 +62,7 @@ Las contribuciones son bienvenidas. Si deseas contribuir, sigue estos pasos:
    ```bash
    git push origin feature/nueva-funcionalidad
    ```
-5. Crea un Pull Request en GitHub.
-```
+
 
 Este archivo guía al usuario a través de la configuración y puesta en marcha de la aplicación en un servidor local. Además, fomenta la contribución al proyecto siguiendo buenas prácticas de Git.
 
