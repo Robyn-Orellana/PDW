@@ -9,14 +9,14 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 
-<body>
+<body  >
 
-    <div class ="cinta_2">
+    <div >
 
         <a href="<?php echo base_url('index.php/welcome/agregar'); ?>" class="btn btn-success mb-3">Agregar Estación</a>
-        <a href="<?php echo base_url('index.php/welcome/notifi'); ?>" class="btn btn-success mb-3">AMINISTRAR NOTIFICACIONES</a>
+        <a href="<?php echo base_url('index.php/welcome/notificacion'); ?>" class="btn btn-success mb-3">Notificaciones Personalizadas</a>
 
-    </div>
+    </div >
 
 
     <div class="container mt-5">
@@ -34,6 +34,7 @@
                                 <button onclick="confirmarEliminacion(<?php echo $estacion['id']; ?>)" class="btn btn-danger">
                                     <img src="<?php echo base_url('vendor/imgs/elim.png'); ?>" alt="Eliminar">
                                 </button>
+                                
                             </div>
                             <div class="card-body">
                                 <div class="card-title">Nombre de la Estación: <?php echo $estacion['nombre_estacion']; ?></div>

@@ -32,6 +32,21 @@ class Welcome extends CI_Controller {
         $this->load->view('agregar_estacion');
     }
 
+    public function notificacion() {
+        // Cargar la vista admin_notificacion.php
+        $this->load->view('admin_notificacion');
+    }
+   
+
+    public function nuevanotificacion() {
+        // Cargar la vista admin_notificacion.phpx
+        $this->load->view('crearnotificacion');
+    }
+
+
+    
+
+
     public function guardar_estacion() {
         // Obtener datos del formulario
         $numero_estacion = $this->input->post('numero_estacion');
@@ -173,4 +188,35 @@ public function detener_tiempo_normal() {
 }
 
     
+//AQUI TENGO LOS METODOS PARA PODER HACER USO DE LA BD
+
+
+    public function crear_notificacion() {
+        $this->load->model('Notificaciones_model');
+        
+        // Obtener los datos del formulario
+        $id_estacion = $this->input->post('id_estacion');
+        $mensaje = $this->input->post('mensaje');
+        $tipo = $this->input->post('tipo');
+        $intervalo = $this->input->post('intervalo');
+        
+        // Insertar la nueva notificación
+        $data = [
+            'id_estacion' => $id_estacion,
+            'mensaje' => $mensaje,
+            'tipo' => $tipo,
+            'intervalo' => $intervalo
+        ];
+        
+        $this->Notificaciones_model->insertar_notificacion($data);
+        redirect('notificaciones/listar');
+    }
+
+    // Métodos adicionales para editar y eliminar notificaciones
+
+
+
+
+
+
 }

@@ -1,0 +1,28 @@
+body {
+    background: linear-gradient(to right, #668696, #d4d4ec,);
+    color: white;
+}
+
+
+.card {
+    background-color: rgba(255, 255, 255, 0.144); /* Fondo blanco con transparencia */
+    border: 2px solid rgba(110, 105, 93, 0.718); /* Borde blanco con transparencia */
+    color: white; /* Letras blancas dentro de la tarjeta */
+    margin-bottom: 20px;
+    border-radius: 5px; /* Bordes redondeados opcional, ajusta según tu diseño */
+    text-align: center;
+    
+
+}
+.wide-table {
+    width: 100%; /* O usa un valor como 1200px para un ancho fijo */
+}
+
+
+.btn {
+    margin: 7px 0;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Transición suave para el color de fondo y sombra */
+    border-radius: 25px; /* Opcional: redondear las esquinas del botón */
+    padding: 10px 20px; /* Opcional: agregar algo de espacio interno */
+    background-color: rgb(51, 84, 121);
+}

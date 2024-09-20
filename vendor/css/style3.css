@@ -1,0 +1,108 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #d4d4ec;
+    background: linear-gradient(to right, #668696, #d4d4ec);
+    margin: 0;
+    padding: 0;
+    color: white; /* Letras blancas dentro de la tarjeta */
+}
+
+
+
+
+.container {
+
+    
+    background-color: rgba(28, 23, 44, 0.67); /* Fondo blanco con transparencia */
+    border: 2px solid rgba(211, 208, 200, 0.718); /* Borde blanco con transparencia */
+   
+    margin-bottom: 20px;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;  
+   
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 40px;
+    box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.464); /* Sombra opcional para dar profundidad */
+}
+
+/* Estilo del título */
+h1 {
+    text-align: center;
+    color: #ffffff;
+}
+
+/* Estilos del formulario */
+.form-notificacion {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Estilo de las etiquetas */
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #ffffff;
+}
+
+/* Estilos de los campos de entrada */
+input[type="text"],
+input[type="url"],
+input[type="number"],
+input[type="color"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+/* Cambiar el color del borde en enfoque */
+input[type="text"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+input[type="color"]:focus,
+textarea:focus,
+select:focus {
+    border-color: #3085d6;
+    outline: none;
+}   
+
+/* Estilos del botón de envío */
+.btn-submit {
+    padding: 12px; 
+    background-color: #1f272f;
+    color: #ffffff;
+    border: none;
+    border-radius: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Cambiar el color del botón al pasar el ratón */
+.btn-submit:hover {
+    
+    border: 4px solid rgba(188, 139, 58, 0.721); /* Borde blanco transparente */
+    background-color: #615d77;
+  
+
+}
+
+.btn-submit2 {
+    margin-top: 20px;
+    margin-left: 250px;
+    color: #ffffff;
+    border: none;
+    border-radius: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
