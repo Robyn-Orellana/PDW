@@ -130,6 +130,9 @@
             }
         }
 
+        
+
+
         // Iniciar cuenta regresiva 
         function startCountdown(estacionId) {
             let duracion = document.getElementById(`duracion-${estacionId}`).value; // Duración ingresada

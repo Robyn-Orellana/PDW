@@ -18,4 +18,13 @@ class Estacion_model extends CI_Model {
         return $this->db->get_where('estaciones', array('numero_estacion' => $numero_estacion))->row_array();
     }
 
+  // Nueva función para obtener todas las estaciones activas
+  public function obtener_todas_las_estaciones() {
+    $this->db->select('*');
+    $this->db->from('estaciones');
+    $this->db->where('activa', 1);  // Solo estaciones activas
+    $query = $this->db->get();
+    return $query->result_array(); // Retorna todas las estaciones como un array
+}
+
 }

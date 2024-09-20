@@ -6,6 +6,8 @@ class Welcome extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('Estacion_model');  // Cargar el modelo
+        $this->load->model('Notificaciones_model');  // Modelo para notificaciones
+
     }
 
     public function index() {
@@ -32,21 +34,118 @@ class Welcome extends CI_Controller {
         $this->load->view('agregar_estacion');
     }
 
+
+
+    //aqui para las notificaiones----------------------------------------------------------
+ 
+
+
+
     public function notificacion() {
+
+        $this->load->model('Notificaciones_model'); // Cargar el modelo de notificaciones
+         $data['notificaciones'] = $this->Notificaciones_model->obtener_todas_las_notificaciones(); // Obtener las notificaciones
+
         // Cargar la vista admin_notificacion.php
-        $this->load->view('admin_notificacion');
+        $this->load->view('admin_notificacion',     $data);
     }
    
-
     public function nuevanotificacion() {
-        // Cargar la vista admin_notificacion.phpx
-        $this->load->view('crearnotificacion');
+        // Obtener todas las estaciones
+        $data['estaciones'] = $this->Estacion_model->obtener_todas_las_estaciones();
+        
+        // Cargar la vista crearnotificacion y pasar los datos de las estaciones
+        $this->load->view('crearnotificacion', $data); // Pasa las estaciones a la vista
     }
 
 
+    public function guardarnotificacion() {
+        $this->load->model('Notificaciones_model'); // Cargar el modelo existente
+    
+        // Recoger los datos del formulario
+        $data = array(
+            'estacion_id' => $this->input->post('id_estacion'),
+            'nombrenotifi' => $this->input->post('nombrenotifi'),
+            'titulo' => $this->input->post('titulo'),
+            'mensaje' => $this->input->post('mensaje'),
+            'imageUrl' => $this->input->post('imageUrl'),
+            'imageWidth' => $this->input->post('imageWidth'),
+            'imageHeight' => $this->input->post('imageHeight'),
+            'colorFondo' => $this->input->post('colorFondo'),
+            'colorBoton' => $this->input->post('colorBoton'),
+            'intervalo' => $this->input->post('intervalo') // Agregar el intervalo
+        );
+        // Si es una alerta por ícono, ajustamos
+        if ($this->input->post('tipoAlerta') === 'icon') {
+            $data['imageUrl'] = null;
+            $data['imageWidth'] = null;
+            $data['imageHeight'] = null;
+        }   
+    
+        // Guardar la notificación en la base de datos
+        $this->Notificaciones_model->guardar_notificacion($data);
+    
+        redirect('welcome/notificacion');
+    }
     
 
+    public function obtener_notificacion($id) {
+        $this->load->model('Notificacion_model');
+        $notificacion = $this->Notificaciones_model->obtener_notificacion_por_id($id);
+        echo json_encode($notificacion);
+    }
+    
 
+    public function editarNotificacion($id) {
+        // Obtener la notificación por ID
+        $data['notificacion'] = $this->Notificaciones_model->obtener_notificacion_por_id($id);
+        $data['estaciones'] = $this->Estacion_model->obtener_todas_las_estaciones();
+    
+        // Cargar la vista de creación, pero para editar
+        $this->load->view('editarnotifi', $data);
+    }
+    
+    public function actualizarNotificacion() {
+        // Recoger los datos del formulario
+        $data = array(
+            'estacion_id' => $this->input->post('id_estacion'),
+            'nombrenotifi' => $this->input->post('nombrenotifi'),
+            'titulo' => $this->input->post('titulo'),
+            'mensaje' => $this->input->post('mensaje'),
+            'imageUrl' => $this->input->post('imageUrl'),
+            'imageWidth' => $this->input->post('imageWidth'),
+            'imageHeight' => $this->input->post('imageHeight'),
+            'colorFondo' => $this->input->post('colorFondo'),
+            'colorBoton' => $this->input->post('colorBoton'),
+            'intervalo' => $this->input->post('intervalo')
+        );
+    
+        // Si es una alerta por ícono, ajustamos
+        if ($this->input->post('tipoAlerta') === 'icon') {
+            $data['imageUrl'] = null;
+            $data['imageWidth'] = null;
+            $data['imageHeight'] = null;
+        }
+    
+        // Actualizar la notificación en la base de datos
+        $this->Notificaciones_model->actualizar_notificacion($this->input->post('id'), $data);
+    
+        redirect('welcome/notificacion');
+    }
+    
+    public function eliminarNotificacion($id) {
+        $this->load->model('Notificaciones_model');
+        
+        // Llamar al modelo para eliminar la notificación
+        $this->Notificaciones_model->eliminar_notificacion($id);
+        
+        // Redirigir de vuelta a la lista de notificaciones
+        redirect('welcome/notificacion');
+    }
+    
+    
+
+    //DEL PROYECTO ORIGNAL---------------------------------------------------------------
     public function guardar_estacion() {
         // Obtener datos del formulario
         $numero_estacion = $this->input->post('numero_estacion');
@@ -190,30 +289,26 @@ public function detener_tiempo_normal() {
     
 //AQUI TENGO LOS METODOS PARA PODER HACER USO DE LA BD
 
+public function crear_notificacion() {
+    $this->load->model('Notificaciones_model');
 
-    public function crear_notificacion() {
-        $this->load->model('Notificaciones_model');
-        
-        // Obtener los datos del formulario
-        $id_estacion = $this->input->post('id_estacion');
-        $mensaje = $this->input->post('mensaje');
-        $tipo = $this->input->post('tipo');
-        $intervalo = $this->input->post('intervalo');
-        
-        // Insertar la nueva notificación
-        $data = [
-            'id_estacion' => $id_estacion,
-            'mensaje' => $mensaje,
-            'tipo' => $tipo,
-            'intervalo' => $intervalo
-        ];
-        
-        $this->Notificaciones_model->insertar_notificacion($data);
-        redirect('notificaciones/listar');
-    }
+    // Obtener los datos del formulario
+    $id_estacion = $this->input->post('id_estacion');
+    $mensaje = $this->input->post('mensaje');
+    $tipo = $this->input->post('tipo');
+    $intervalo = $this->input->post('intervalo');
 
-    // Métodos adicionales para editar y eliminar notificaciones
+    // Insertar la nueva notificación
+    $data = [
+        'id_estacion' => $id_estacion,
+        'mensaje' => $mensaje,
+        'tipo' => $tipo,
+        'intervalo' => $intervalo
+    ];
 
+    $this->Notificaciones_model->insertar_notificacion($data);
+    redirect('welcome/notificacion'); // Redirigir a la página de notificaciones
+}
 
 
 

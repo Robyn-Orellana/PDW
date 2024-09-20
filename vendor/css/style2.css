@@ -15,7 +15,7 @@ body {
 
 }
 .wide-table {
-    width: 100%; /* O usa un valor como 1200px para un ancho fijo */
+    width: 150%; /* O usa un valor como 1200px para un ancho fijo */
 }
 
 
