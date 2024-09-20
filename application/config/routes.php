@@ -67,3 +67,4 @@ $route['usuarios/eliminar/(:any)'] = 'usuarios/eliminar/$1'; // Acción para eli
 $route['login'] = 'auth_controller/login'; // Ruta para la página de login
 $route['login/process'] = 'auth_controller/process'; // Ruta para procesar el login
 $route['logout'] = 'auth_controller/logout'; // Ruta para cerrar sesión
+$route['logout'] = 'auth_controller/logout'; // Ruta para cerrar sesión
