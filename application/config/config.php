@@ -53,6 +53,9 @@ $config['index_page'] = 'index.php';
 | WARNING: If you set this to 'PATH_INFO', URIs will always be URL-decoded!
 */
 $config['uri_protocol']	= 'REQUEST_URI';
+$route['default_controller'] = 'welcome'; // Define the default controller
+$route['404_override'] = '';
+$route['translate_uri_dashes'] = FALSE;
 
 /*
 |--------------------------------------------------------------------------
@@ -225,7 +228,7 @@ $config['allow_get_array'] = TRUE;
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 0;
+$config['log_threshold'] = 4;
 
 /*
 |--------------------------------------------------------------------------

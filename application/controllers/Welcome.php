@@ -1,4 +1,5 @@
 <?php
+// Welcome.php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Welcome extends CI_Controller {
@@ -6,6 +7,11 @@ class Welcome extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('Estacion_model');  // Cargar el modelo
+        $this->load->model('Usuario_model');   // Cargar el modelo de usuario
+        $this->load->library('session');
+        $this->load->helper('url');
+        $this->load->library('auth');
+     
     }
 
     public function index() {
@@ -51,14 +57,65 @@ class Welcome extends CI_Controller {
     }
 
     public function eliminar($id_estacion) {
-        // Cambiar la columna activa a 0
-        $this->db->where('id', $id_estacion);
-        $this->db->update('estaciones', ['activa' => 0]);
-
-        // Redirigir a la página principal
-        redirect('welcome');
+        // Obtener el ID del usuario desde la sesión
+        $usuario_id = $this->session->userdata('usuario_id');
+        
+        // Obtener el rol del usuario desde el modelo de usuarios
+        $usuario = $this->Usuario_model->obtenerPorId($usuario_id);
+        
+        // Verificar si el usuario tiene rol de 'admin'
+        if ($usuario['rol'] === 'administrador') {
+            // Si el usuario es 'admin', permitir eliminar la estación
+            $this->db->where('id', $id_estacion);
+            $this->db->update('estaciones', ['activa' => 0]);
+    
+            // Redirigir a la página principal
+            redirect('welcome');
+        } else {
+            // Si el usuario no es 'admin', mostrar un mensaje de acceso denegado
+            $data['error'] = 'No tienes permisos para eliminar estaciones.';
+            $this->load->view('acceso_denegado_view', $data);
+        }
     }
 
+    public function crear_usuario() {
+        // Verificar si el usuario es administrador
+        $usuario_id = $this->session->userdata('usuario_id');
+        $usuario = $this->Usuario_model->obtenerPorId($usuario_id);
+        
+        if ($usuario['rol'] !== 'administrador') {
+            $data['error'] = 'No tienes permisos para acceder a esta página.';
+            $this->load->view('acceso_denegado_view', $data);
+        } else {
+            // Cargar vista de creación de usuario
+            $this->load->view('crear_usuario_view');
+        }
+    }
+    //boton 
+    public function lista_usuarios() {
+        // Verificar si el usuario es administrador
+        $usuario_id = $this->session->userdata('usuario_id');
+        $usuario = $this->Usuario_model->obtenerPorId($usuario_id);
+        
+        if ($usuario['rol'] !== 'administrador') {
+            $data['error'] = 'No tienes permisos para acceder a esta página.';
+            $this->load->view('acceso_denegado_view', $data);
+        } else {
+            // Cargar lista de usuarios
+            $data['usuarios'] = $this->Usuario_model->obtenerTodos();
+            $this->load->view('lista_usuarios_view', $data);
+        }
+    }
+    
+    public function logout() {
+        // Destruir la sesión
+        $this->session->unset_userdata('usuario_id');
+        $this->session->sess_destroy();
+        
+        // Redirigir a la página de login
+        redirect('login');
+    }
+    
 
     public function iniciar_tiempo_normal() {
         $id_estacion = $this->input->post('estacion_id');
@@ -83,10 +140,7 @@ class Welcome extends CI_Controller {
             echo json_encode(['success' => false, 'message' => 'Ya hay un tiempo activo para esta estación.']);
         }
     }
-    
 
-
-    // Iniciar tiempo (ya sea tiempo libre o cuenta regresiva)
     public function iniciar_tiempo_regresivo() {
         $id_estacion = $this->input->post('estacion_id');
         $duracion = $this->input->post('duracion'); // Duración en segundos
@@ -110,67 +164,61 @@ class Welcome extends CI_Controller {
         }
     }
 
-    // Detener tiempo
-   // Detener tiempo regresivo al finalizar
-public function detener_tiempo_regresivo() {
-    $id_estacion = $this->input->post('estacion_id');
+    public function detener_tiempo_regresivo() {
+        $id_estacion = $this->input->post('estacion_id');
     
-    // Verificar si hay un tiempo activo
-    $this->db->where('id_estacion', $id_estacion);
-    $this->db->where('hora_fin', NULL);
-    $tiempo_activo = $this->db->get('tiempos_estaciones')->row_array();
+        // Verificar si hay un tiempo activo
+        $this->db->where('id_estacion', $id_estacion);
+        $this->db->where('hora_fin', NULL);
+        $tiempo_activo = $this->db->get('tiempos_estaciones')->row_array();
     
-    if ($tiempo_activo) {
-        $hora_inicio = new DateTime($tiempo_activo['hora_inicio']);
-        $hora_fin = new DateTime(); // Hora actual
+        if ($tiempo_activo) {
+            $hora_inicio = new DateTime($tiempo_activo['hora_inicio']);
+            $hora_fin = new DateTime(); // Hora actual
     
-        // Calcular la duración en segundos
-        $intervalo = $hora_inicio->diff($hora_fin);
-        $duracion_segundos = ($intervalo->h * 3600) + ($intervalo->i * 60) + $intervalo->s;
+            // Calcular la duración en segundos
+            $intervalo = $hora_inicio->diff($hora_fin);
+            $duracion_segundos = ($intervalo->h * 3600) + ($intervalo->i * 60) + $intervalo->s;
     
-        // Actualizar la hora de fin y la duración
-        $this->db->where('id', $tiempo_activo['id']);
-        $this->db->update('tiempos_estaciones', [
-            'hora_fin' => $hora_fin->format('Y-m-d H:i:s'),
-            'duracion' => $duracion_segundos // Guardar duración en segundos
-        ]);
+            // Actualizar la hora de fin y la duración
+            $this->db->where('id', $tiempo_activo['id']);
+            $this->db->update('tiempos_estaciones', [
+                'hora_fin' => $hora_fin->format('Y-m-d H:i:s'),
+                'duracion' => $duracion_segundos // Guardar duración en segundos
+            ]);
     
-        echo json_encode(['success' => true, 'message' => 'Tiempo regresivo detenido correctamente.']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'No hay un tiempo activo para esta estación.']);
+            echo json_encode(['success' => true, 'message' => 'Tiempo regresivo detenido correctamente.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No hay un tiempo activo para esta estación.']);
+        }
     }
-}
 
-    
-// Detener cronómetro normal
-public function detener_tiempo_normal() {
-    $id_estacion = $this->input->post('estacion_id');
+    public function detener_tiempo_normal() {
+        $id_estacion = $this->input->post('estacion_id');
 
-    // Verificar si hay un tiempo activo
-    $this->db->where('id_estacion', $id_estacion);
-    $this->db->where('hora_fin', NULL); // Buscar un registro activo (sin hora de fin)
-    $tiempo_activo = $this->db->get('tiempos_estaciones')->row_array();
+        // Verificar si hay un tiempo activo
+        $this->db->where('id_estacion', $id_estacion);
+        $this->db->where('hora_fin', NULL); // Buscar un registro activo (sin hora de fin)
+        $tiempo_activo = $this->db->get('tiempos_estaciones')->row_array();
 
-    if ($tiempo_activo) {
-        $hora_inicio = new DateTime($tiempo_activo['hora_inicio']);
-        $hora_fin = new DateTime(); // Hora actual
+        if ($tiempo_activo) {
+            $hora_inicio = new DateTime($tiempo_activo['hora_inicio']);
+            $hora_fin = new DateTime(); // Hora actual
 
-        // Calcular la duración en segundos
-        $intervalo = $hora_inicio->diff($hora_fin);
-        $duracion_segundos = ($intervalo->h * 3600) + ($intervalo->i * 60) + $intervalo->s;
+            // Calcular la duración en segundos
+            $intervalo = $hora_inicio->diff($hora_fin);
+            $duracion_segundos = ($intervalo->h * 3600) + ($intervalo->i * 60) + $intervalo->s;
 
-        // Actualizar la hora de fin y la duración
-        $this->db->where('id', $tiempo_activo['id']);
-        $this->db->update('tiempos_estaciones', [
-            'hora_fin' => $hora_fin->format('Y-m-d H:i:s'),
-            'duracion' => $duracion_segundos // Guardar duración en segundos
-        ]);
+            // Actualizar la hora de fin y la duración
+            $this->db->where('id', $tiempo_activo['id']);
+            $this->db->update('tiempos_estaciones', [
+                'hora_fin' => $hora_fin->format('Y-m-d H:i:s'),
+                'duracion' => $duracion_segundos // Guardar duración en segundos
+            ]);
 
-        echo json_encode(['success' => true, 'message' => 'Cronómetro detenido y duración guardada.']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'No hay un cronómetro activo para esta estación.']);
+            echo json_encode(['success' => true, 'message' => 'Cronómetro detenido y duración guardada.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No hay un cronómetro activo para esta estación.']);
+        }
     }
-}
-
-    
 }

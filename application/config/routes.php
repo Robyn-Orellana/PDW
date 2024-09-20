@@ -53,5 +53,17 @@ $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
-$route['welcome'] = 'welcome/index';
-$route['welcome/agregar'] = 'welcome/agregar';
+// config/routes.php
+
+//$route['default_controller'] = 'usuarios'; // Controlador por defecto
+
+// Rutas para el controlador de Usuarios
+$route['usuarios'] = 'usuarios/index'; // Listar usuarios
+$route['usuarios/agregar'] = 'usuarios/agregar'; // Formulario para agregar usuario
+$route['usuarios/guardar'] = 'usuarios/guardar'; // Acción para guardar un nuevo usuario
+$route['usuarios/editar/(:any)'] = 'usuarios/editar/$1'; // Formulario para editar usuario con ID
+$route['usuarios/actualizar/(:any)'] = 'usuarios/actualizar/$1'; // Acción para actualizar un usuario con ID
+$route['usuarios/eliminar/(:any)'] = 'usuarios/eliminar/$1'; // Acción para eliminar usuario con ID
+$route['login'] = 'auth_controller/login'; // Ruta para la página de login
+$route['login/process'] = 'auth_controller/process'; // Ruta para procesar el login
+$route['logout'] = 'auth_controller/logout'; // Ruta para cerrar sesión

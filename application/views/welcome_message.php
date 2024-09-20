@@ -13,7 +13,30 @@
     <div class="container mt-5">
         <!-- Botón para agregar una nueva estación -->
         <a href="<?php echo base_url('index.php/welcome/agregar'); ?>" class="btn btn-success mb-3">Agregar Estación</a>
-        
+
+        <?php
+    // Verificar si el usuario tiene rol de administrador
+    $usuario_id = $this->session->userdata('usuario_id');
+    $usuario = $this->Usuario_model->obtenerPorId($usuario_id);
+    
+    if ($usuario['rol'] === 'administrador'): 
+?>
+    <a href="<?php echo site_url('usuarios/agregar'); ?>">
+        <button>Crear Usuario</button>
+    </a>
+
+    <a href="<?php echo site_url('usuarios'); ?>">
+        <button>Lista de Usuarios</button>
+    </a>
+<?php endif; ?>
+
+         <!-- Botón para cerrar sesión -->
+         <a href="<?php echo site_url('welcome/logout'); ?>">
+    <button>Cerrar sesión</button>
+    
+</a>
+
+
         <!-- Contenedor para las tarjetas de estaciones -->
         <div class="row" id="estaciones-container">
             <?php if (!empty($estaciones)): ?>
