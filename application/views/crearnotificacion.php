@@ -61,6 +61,7 @@
         <div id="iconFields" style="display:block;">
             <label for="icono">Ícono de Alerta:</label>
             <select id="icono" name="icono">
+                <option value="empy"></option>
                 <option value="success">Éxito</option>
                 <option value="error">Error</option>
                 <option value="warning">Advertencia</option>

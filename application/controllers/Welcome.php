@@ -7,13 +7,25 @@ class Welcome extends CI_Controller {
         parent::__construct();
         $this->load->model('Estacion_model');  // Cargar el modelo
         $this->load->model('Notificaciones_model');  // Modelo para notificaciones
-
     }
 
     public function index() {
         // Obtener estaciones activas
         $this->db->where('activa', 1);
         $estaciones = $this->db->get('estaciones')->result_array();
+
+        // Cargar todas las notificaciones
+        $notificaciones = $this->Notificaciones_model->obtener_todas_las_notificaciones();
+
+        // Agrupar las notificaciones por estación
+        $notificacionesPorEstacion = [];
+        foreach ($notificaciones as $notificacion) {
+            $estacionId = $notificacion['estacion_id'];
+            if (!isset($notificacionesPorEstacion[$estacionId])) {
+                $notificacionesPorEstacion[$estacionId] = [];
+            }
+            $notificacionesPorEstacion[$estacionId][] = $notificacion;
+        }
 
         foreach ($estaciones as &$estacion) {
             // Verificar si hay un tiempo activo para esta estación
@@ -23,23 +35,22 @@ class Welcome extends CI_Controller {
 
             // Si hay un tiempo activo, indicarlo
             $estacion['tiempo_activo'] = !empty($tiempo_activo);
+
+            // Agregar las notificaciones de esta estación
+            $estacion['notificaciones'] = isset($notificacionesPorEstacion[$estacion['id']]) ? $notificacionesPorEstacion[$estacion['id']] : [];
         }
 
         $data['estaciones'] = $estaciones;
         $this->load->view('welcome_message', $data);
     }
-
+       
     public function agregar() {
-        // Cargar vista para agregar estación
+    // Cargar vista para agregar estación
         $this->load->view('agregar_estacion');
     }
 
-
-
     //aqui para las notificaiones----------------------------------------------------------
  
-
-
 
     public function notificacion() {
 

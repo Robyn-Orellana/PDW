@@ -63,6 +63,7 @@
         <div id="iconFields" style="<?php echo isset($notificacion) && $notificacion['imageUrl'] == null ? 'display:block;' : 'display:none;'; ?>">
             <label for="icono">Ícono de Alerta:</label>
             <select id="icono" name="icono">
+   
                 <option value="success" <?php echo isset($notificacion) && $notificacion['imageUrl'] == null && $notificacion['colorFondo'] == 'success' ? 'selected' : ''; ?>>Éxito</option>
                 <option value="error" <?php echo isset($notificacion) && $notificacion['imageUrl'] == null && $notificacion['colorFondo'] == 'error' ? 'selected' : ''; ?>>Error</option>
                 <option value="warning" <?php echo isset($notificacion) && $notificacion['imageUrl'] == null && $notificacion['colorFondo'] == 'warning' ? 'selected' : ''; ?>>Advertencia</option>
