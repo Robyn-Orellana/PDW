@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estaciones de Monitoreo</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="<?php echo base_url('vendor/css/styles.css?v=1.0'); ?>">
+    <link gitrel="stylesheet" href="<?php echo base_url('vendor/css/styles.css?v=1.0'); ?>">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 
@@ -14,6 +14,7 @@
             <div id="caja1">
                 <h1 id="ubicacion"></h1> 
                 <h1 id="temperatura"></h1>   
+                <!-- comentario de prueba git -->
             </div>
             <div id="caja2">
                 <img id="icono" src="" alt="" height="120" width="120">
