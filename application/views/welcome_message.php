@@ -32,11 +32,13 @@
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <span>Estación Nº <?php echo $estacion['numero_estacion']; ?></span>
+
                                 <!-- Botón para eliminar la estación con imagen -->
-                                <button onclick="confirmarEliminacion(<?php echo $estacion['id']; ?>)" class="btn btn-danger btn-sm">
-                                    <img src="<?php echo base_url('vendor/imgs/elim.png'); ?>" alt="Eliminar" width="20" height="20">
+                                <button onclick="confirmarEliminacion(<?php echo $estacion['id']; ?>)" class="btn btn-danger">
+                                    <img src="<?php echo base_url('vendor/imgs/elim.png'); ?>" alt="Eliminar">
                                 </button>
                             </div>
+
                             <div class="card-body">
                                 <h5 class="card-title">Nombre de la Estación: <?php echo $estacion['nombre_estacion']; ?></h5>
                                 <p class="timer" id="timer-<?php echo $estacion['id']; ?>">00h 00m 00s</p>
@@ -82,7 +84,7 @@
         ?>;
     </script>
 
-    <!-- Script para manejar los timers y notificaciones -->
+
     <script>
         let countdownIntervals = {}; // Para cronómetros regresivos
         let normalTimerIntervals = {}; // Para cronómetros normales
@@ -130,6 +132,19 @@
                 };
             }
             localStorage.setItem('timers', JSON.stringify(timers));
+        }
+
+
+        // Confirmar eliminación de estación
+        function confirmarEliminacion(estacionId) {
+            const confirmar = confirm("¿Estás seguro de que quieres eliminar esta estación?");
+            if (confirmar) {
+                // Redirigir al usuario para eliminar la estación
+                window.location.href = "<?php echo base_url('index.php/welcome/eliminar/'); ?>" + estacionId;
+            } else {
+                // Si el usuario cancela, no hacer nada
+                console.log("Eliminación cancelada");
+            }
         }
 
         // Iniciar cuenta regresiva 
