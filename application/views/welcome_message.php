@@ -10,6 +10,77 @@
 </head>
 
 <body>
+<div id = "contenedor">
+            <div id="caja1">
+                <h1 id="ubicacion"></h1> 
+                <h1 id="temperatura"></h1>   
+            </div>
+            <div id="caja2">
+                <img id="icono" src="" alt="" height="120" width="120">
+            </div>
+            
+            <style>
+                *{
+                    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+                }
+
+                #contenedor {
+                width: 260px;
+                height: 125px;
+                display: flex; 
+                justify-content: flex-end; /* Alinea el contenido a la derecha */
+                border: 2px dashed black; /* Añadí un ancho al borde para que sea visible */
+                background: linear-gradient(to right, #2C5364, #203A43, #0F2027); /* Fondo degradado */
+                }
+
+                #caja1{
+                    color: white;
+                    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+                   }
+            </style>
+
+            <script>
+                let temp = document.getElementById('temperatura')
+                let ub = document.getElementById('ubicacion')
+                let ia = document.getElementById('icono')
+    
+                window.addEventListener('load', ()=>{
+
+                let lon 
+                let lat
+ 
+                    if(navigator.geolocation){
+                        navigator.geolocation.getCurrentPosition( posicion => {
+                            
+                            lon = posicion.coords.longitude
+                            lat = posicion.coords.latitude
+    
+                            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=19ac444646b5fa3cff030ada4062c05c`
+    
+                            fetch(url)
+                                .then(response => {return response.json()})
+                                .then(data => {
+                                        console.log(data.main.temp)
+                                        let t = Math.round(data.main.temp)
+                                        temp.textContent = `${t} °C`
+    
+                                        ub.textContent = data.name
+
+                                        console.log(data.weather[0].icon)
+                                        let icc = data.weather[0].icon
+                                        const di = `http://openweathermap.org/img/wn/${icc}.png`
+                                        ia.src= di
+    
+                                })
+                                .catch(error =>{
+                                    console.log(error)
+                                })
+                        })
+                    }
+                })
+            </script>
+    </div>
+
     <div class="container mt-5">
         <!-- Botón para agregar una nueva estación -->
         <a href="<?php echo base_url('index.php/welcome/agregar'); ?>" class="btn btn-success mb-3">Agregar Estación</a>
